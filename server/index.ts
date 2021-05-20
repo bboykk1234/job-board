@@ -3,9 +3,13 @@ import path from "path";
 import 'dotenv/config';
 import "./database";
 import "./middlewares/auth";
-import { User } from "./database/models/User";
 import passport from "passport";
-import jwt from "jsonwebtoken";
+import { login } from "./controllers/auth";
+import jobRouter from "./routes/jobs";
+import { ExpressJoiError } from "express-joi-validation";
+import levelRouter from "./routes/levels";
+import employmentTypeRouter from "./routes/employment_types";
+import jobApplicationRouter from "./routes/job_applications";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,60 +18,45 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../build")));
 
-app.post("/api/login", async (req, res, next) => {
-    passport.authenticate("login", async (err, user, info) => {
-        try {
-            if (err || !user) {
-                const error = new Error('An error occurred.');
+app.post("/api/auth/login", login);
 
-                return next(error);
-            }
-
-            req.login(
-                user,
-                { session: false },
-                async (error) => {
-                    if (error) return next(error);
-
-                    const body = { _id: user._id, username: user.username, createdAt: user.createdAt, updatedAt: user.updatedAt };
-                    const token = jwt.sign({ user: body, exp: Math.floor(Date.now() / 1000) + (60 * 60) }, 'TOP_SECRET');
-
-                    return res.json({ token });
-                }
-            );
-        } catch (error) {
-            return next(error);
-        }
-    })(req, res, next);
+app.get("/api/auth/users", passport.authenticate("jwt", { session: false }), (req: express.Request, res, next) => {
+    res.json(req.user);
 });
 
-app.get("/api/users/profile", passport.authenticate("jwt", { session: false }), (req: express.Request, res, next) => {
-    res.json({
-        message: 'You made it to the secure route',
-        user: req.user,
-    });
-});
-
-app.get("/api/jobs", async (req, res) => {
-    const user = await User.find();
-    res.json(user);
-});
-
-app.post("/api/jobs", (req, res) => {
-    res.json({
-        message: "Hello World!!!",
-    });
-});
-
-app.put("/api/jobs", (req, res) => {
-    res.json({
-        message: "Hello World!!!",
-    });
-});
+app.use("/api/jobs", jobRouter);
+app.use("/api/levels", levelRouter);
+app.use("/api/employment_types", employmentTypeRouter);
+app.use("/api/job_applications", jobApplicationRouter);
 
 app.get('/*', function (req, res) {
     res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
+
+// NOTE: Custom error handler always last
+// https://expressjs.com/en/guide/error-handling.html
+app.use(
+    (
+        err: any | ExpressJoiError,
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+    ) => {
+        if (err && err.error && err.error.isJoi) {
+            const e: ExpressJoiError = err
+            res.status(400).json({
+                type: e.type,
+                details: e.error?.details,
+            });
+        } else {
+            console.log(err);
+
+            res.status(500).json({
+                message: 'internal server error'
+            });
+        }
+    }
+);
 
 app.listen(port, async () => {
     console.log(`Listening on port ${port}`)

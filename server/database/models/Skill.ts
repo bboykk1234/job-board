@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToMany, JoinTable, OneToMany } from "typeorm";
+import { Entity, Column, OneToMany } from "typeorm";
 import { Base } from "./Base";
 import { JobSkill } from "./JobSkill";
 

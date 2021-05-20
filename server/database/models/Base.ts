@@ -1,4 +1,4 @@
-import { Entity, Column, BaseEntity, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, BaseEntity, PrimaryGeneratedColumn, BeforeInsert, UpdateDateColumn, BeforeUpdate } from "typeorm";
 
 @Entity({ synchronize: false })
 export abstract class Base extends BaseEntity {
@@ -10,13 +10,26 @@ export abstract class Base extends BaseEntity {
 
     @Column({
         name: "created_at",
+        type: "timestamp",
         nullable: true
     })
-    createdAt!: number;
+    createdAt!: Date;
 
     @Column({
         name: "updated_at",
+        type: "timestamp",
         nullable: true
     })
-    updatedAt!: number;
+    updatedAt!: Date;
+
+    @BeforeInsert()
+    setDates() {
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
+    }
+
+    @BeforeUpdate()
+    setUpdatedAtToNow() {
+        this.updatedAt = new Date();
+    }
 }

@@ -1,13 +1,21 @@
+import { ValidatedRequest } from "express-joi-validation";
 import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { PostJobApplicationRequestSchema } from "../../requests/job_applications";
 import { Base } from "./Base";
 import { Job } from "./Job";
 
 @Entity({ name: "job_applications" })
-export class Skill extends Base {
+export class JobApplication extends Base {
 
     @ManyToOne(() => Job)
     @JoinColumn({name: "job_id"})
-    job!: Job;
+    job?: Job;
+
+    @Column({
+        unsigned: true,
+        name: "job_id"
+    })
+    jobId!: number;
 
     @Column({
         length: 255,
@@ -57,4 +65,21 @@ export class Skill extends Base {
         length: 50,
     })
     country!: string;
+
+    static populateViaPostReq(req: ValidatedRequest<PostJobApplicationRequestSchema>): JobApplication {
+        const jobApplication = new JobApplication();
+
+        jobApplication.firstName = req.body.firstName;
+        jobApplication.lastName = req.body.lastName;
+        jobApplication.jobId = req.body.jobId;
+        jobApplication.email = req.body.email;
+        jobApplication.phoneNumber = req.body.phoneNumber;
+        jobApplication.address = req.body.address;
+        jobApplication.city = req.body.city;
+        jobApplication.province = req.body.province;
+        jobApplication.postalCode = req.body.postalCode;
+        jobApplication.country = req.body.country;
+
+        return jobApplication;
+    }
 }
