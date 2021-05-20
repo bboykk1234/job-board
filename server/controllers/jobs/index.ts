@@ -6,6 +6,7 @@ import { Job } from "../../database/models/Job";
 import { JobSkill } from "../../database/models/JobSkill";
 import { Skill } from "../../database/models/Skill";
 import { SaveJobRequestSchema } from "../../requests/jobs";
+import keywordExtractor from "keyword-extractor";
 
 export const get = async (req: Request, res: Response) => {
     const job = await Job.findOne(req.params.id);

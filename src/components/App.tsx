@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import {
     BrowserRouter as Router,
@@ -6,6 +6,8 @@ import {
     Route,
     Link
 } from "react-router-dom";
+import { EditorState, convertToRaw, RawDraftContentState } from 'draft-js';
+import { Editor as DraftEditor } from "react-draft-wysiwyg";
 
 export default function App() {
     return (
@@ -22,6 +24,9 @@ export default function App() {
                         <li>
                             <Link to="/users">Users</Link>
                         </li>
+                        <li>
+                            <Link to="/editor">Editor</Link>
+                        </li>
                     </ul>
                 </nav>
 
@@ -33,6 +38,9 @@ export default function App() {
                     </Route>
                     <Route path="/users">
                         <Users />
+                    </Route>
+                    <Route path="/editor">
+                        <Editor />
                     </Route>
                     <Route path="/">
                         <Home />
@@ -53,4 +61,43 @@ function About() {
 
 function Users() {
     return <h2>Users</h2>;
+}
+
+function Editor() {
+    const [editorState, setEditorState] = React.useState(
+        () => EditorState.createEmpty(),
+    );
+
+    function saveEditorContent(raw: RawDraftContentState) {
+        console.log(raw);
+    }
+
+    function handleChange(editorState: EditorState) {
+
+        // Convert to raw js object
+        const raw = convertToRaw(editorState.getCurrentContent());
+
+        // Save raw js object to local storage
+        saveEditorContent(raw);
+        setEditorState(editorState);
+    };
+
+    function renderContentAsRawJs() {
+        const contentState = editorState.getCurrentContent();
+        const raw = convertToRaw(contentState);
+
+        return JSON.stringify(raw, null, 2);
+
+    }
+
+    return <>
+        <DraftEditor
+            editorState={editorState}
+            toolbarClassName="toolbarClassName"
+            wrapperClassName="wrapperClassName"
+            editorClassName="editorClassName"
+            onEditorStateChange={handleChange}
+        />
+        <pre>{renderContentAsRawJs()}</pre>
+    </>;
 }
