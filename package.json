@@ -10,8 +10,12 @@
         "@types/express": "^4.17.11",
         "@types/jest": "^26.0.15",
         "@types/node": "^12.0.0",
+        "@types/passport": "^1.0.6",
+        "@types/passport-jwt": "^3.0.5",
+        "@types/passport-local": "^1.0.33",
         "@types/react": "^17.0.0",
         "@types/react-dom": "^17.0.0",
+        "@types/react-router-dom": "^5.1.7",
         "bcrypt": "^5.0.1",
         "body-parser": "^1.19.0",
         "jsonwebtoken": "^8.5.1",
@@ -40,9 +44,14 @@
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "start": "ts-node src/index.ts",
-        "migration:run": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run",
-        "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
-        "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed"
+        "typeorm": "ts-node --transpile-only ./node_modules/typeorm/cli.js",
+        "typeorm:seed": "ts-node --transpile-only ./node_modules/typeorm-seeding/dist/cli.js",
+        "migration:run": "yarn typeorm migration:run",
+        "seed:config": "yarn typeorm:seed config",
+        "seed:run": "yarn typeorm:seed seed",
+        "migration:generate": "yarn typeorm migration:generate",
+        "migration:show": "yarn typeorm migration:show",
+        "migration:create": "typeorm migration:create"
     },
     "eslintConfig": {
         "extends": [
