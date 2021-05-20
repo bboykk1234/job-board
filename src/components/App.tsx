@@ -97,6 +97,8 @@ function Editor() {
             wrapperClassName="wrapperClassName"
             editorClassName="editorClassName"
             onEditorStateChange={handleChange}
+            toolbarHidden
+            readOnly
         />
         <pre>{renderContentAsRawJs()}</pre>
     </>;
