@@ -87,7 +87,12 @@ function Editor() {
         const raw = convertToRaw(contentState);
 
         return JSON.stringify(raw, null, 2);
+    }
 
+    function renderContentAsPlainText() {
+        const plaintext = editorState.getCurrentContent().getPlainText();
+
+        return plaintext;
     }
 
     return <>
@@ -97,9 +102,10 @@ function Editor() {
             wrapperClassName="wrapperClassName"
             editorClassName="editorClassName"
             onEditorStateChange={handleChange}
-            toolbarHidden
-            readOnly
+            // toolbarHidden
+            // readOnly
         />
         <pre>{renderContentAsRawJs()}</pre>
+        <div>{renderContentAsPlainText()}</div>
     </>;
 }

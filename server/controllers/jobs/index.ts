@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import { ValidatedRequest } from "express-joi-validation";
-import { difference } from "lodash";
+import { difference, uniq } from "lodash";
 import { EmploymentType } from "../../database/models/EmploymentType";
 import { Job } from "../../database/models/Job";
 import { JobSkill } from "../../database/models/JobSkill";
 import { Skill } from "../../database/models/Skill";
 import { SaveJobRequestSchema } from "../../requests/jobs";
-import keywordExtractor from "keyword-extractor";
 
 export const get = async (req: Request, res: Response) => {
     const job = await Job.findOne(req.params.id);
@@ -44,7 +43,7 @@ export const create = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
 
     req.body.employmentType = employmentType;
 
-    const skills = await Skill.findByIds(skillIds);
+    const skills = await Skill.findByIds(uniq(skillIds));
 
     if (skills.length === 0) {
         res.status(400).json({
@@ -55,6 +54,7 @@ export const create = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
     }
 
     const job = Job.populateViaPostReq(req);
+    job.generateKeywords(employmentType, skills);
     await job.save();
 
     for (const skill of skills) {
@@ -81,6 +81,7 @@ export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
     }
 
     const { employmentTypeId, skillIds } = req.body;
+    const uniqSkillIds = uniq(skillIds);
     const employmentType = await EmploymentType.findOne(employmentTypeId);
 
     if (!employmentType) {
@@ -94,8 +95,8 @@ export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
     job.populateViaPutReq(req);
 
     const oldSkillIds = job.jobSkillPivot?.map(jobSkill => jobSkill.skillId) || [];
-    const newSkillIds = difference(skillIds, oldSkillIds);
-    const skillIdsShouldDelete = difference(oldSkillIds, skillIds);
+    const newSkillIds = difference(uniqSkillIds, oldSkillIds);
+    const skillIdsShouldDelete = difference(oldSkillIds, uniqSkillIds);
     const newSkills = await Skill.findByIds(newSkillIds);
 
     if (newSkills.length === 0) {
