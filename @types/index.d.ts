@@ -53,7 +53,8 @@ export type JobFormFieldValues = {
     location: string,
     employmentTypeId?: number,
     minYearsWorkExp?: number,
-    description: RawDraftContentState
+    description: RawDraftContentState,
+    skills: Skill[]
 }
 
 export type EditorProps = {

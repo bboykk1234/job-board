@@ -2,12 +2,9 @@ import { convertFromRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import { JobFormFieldValues, Skill } from "../../@types";
 import { useForm, Controller } from "react-hook-form";
-import { OptionsType } from 'react-select';
 import AsyncSelect from 'react-select/async';
 import axios from "axios";
 import EmploymentTypeSelect from "./EmploymentTypeSelect";
-import React, { SetStateAction, useState } from "react";
-
 
 export default function JobForm() {
     const { register, handleSubmit, control } = useForm<JobFormFieldValues>({
@@ -15,8 +12,7 @@ export default function JobForm() {
             description: { blocks: [], entityMap: {} }
         }
     });
-    const [inputValue, setValue] = useState('');
-    const [selectedValues, setSelectedValues] = useState<Skill[]>([]);
+    // const [selectedValues, setSelectedValues] = useState<Skill[]>([]);
 
     async function onSubmit(values: JobFormFieldValues) {
         try {
@@ -36,9 +32,9 @@ export default function JobForm() {
             .then(data => data.data);
     }
 
-    function handleChange(value: OptionsType<Skill>) {
-        setSelectedValues(value as SetStateAction<Skill[]>)
-    }
+    // function handleChange(value: OptionsType<Skill>) {
+    //     setSelectedValues(value as SetStateAction<Skill[]>)
+    // }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -57,23 +53,40 @@ export default function JobForm() {
                 <label className="form-label" htmlFor="min-years-work-exp">Work Experience</label>
                 <input type="number" className="form-control" id="min-years-work-exp" {...register("minYearsWorkExp", { required: true, valueAsNumber: true })} />
             </div>
-            <AsyncSelect
-                isMulti
-                hideSelectedOptions
-                value={selectedValues}
-                getOptionLabel={e => e.name}
-                getOptionValue={e => e.id.toString()}
-                defaultOptions={[]}
-                loadOptions={loadSkillList}
-                onInputChange={e => setValue(e)}
-                onChange={handleChange}
+            <Controller
+                control={control}
+                name="skills"
+                rules={{
+                    required: {
+                        value: true,
+                        message: "Please select the skills",
+                    },
+                }}
+                render={({ field: { value, onChange }, fieldState: { error } }) => {
+                    return (
+                        <>
+                            <AsyncSelect
+                                isMulti
+                                hideSelectedOptions
+                                value={value}
+                                getOptionLabel={e => e.name}
+                                getOptionValue={e => e.id.toString()}
+                                defaultOptions={[]}
+                                loadOptions={loadSkillList}
+                                onChange={onChange}
+                            />
+                            {error && <div>{error.message}</div>}
+                        </>
+                    );
+                }}
             />
+
             <Controller
                 control={control}
                 name="description"
                 rules={{
                     required: true, validate: {
-                        hasText: value => convertFromRaw(value).hasText() || "Description must not be empty",
+                        hasText: value => convertFromRaw(value).hasText() || "Please fill up the Description",
                     }
                 }}
                 render={({ field: { value, onChange }, fieldState: { error }, formState }) => {
