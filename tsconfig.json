@@ -20,11 +20,13 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "sourceMap": true,
     },
     "include": [
         "src",
-        "server"
+        "server",
+        "@types"
     ],
     "ts-node": {
         // these options are overrides used only by ts-node

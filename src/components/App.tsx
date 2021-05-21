@@ -1,54 +1,84 @@
-import React, { useEffect } from 'react';
-import './App.css';
+import React, { useContext } from 'react';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link,
+    Redirect
 } from "react-router-dom";
-import { EditorState, convertToRaw, RawDraftContentState } from 'draft-js';
-import { Editor as DraftEditor } from "react-draft-wysiwyg";
+import LoginForm from './LoginForm';
+import { UserContext } from '../contexts/User';
+import JobList from './JobList';
+import JobApplicationForm from './JobApplicationForm';
+import JobForm from './JobForm';
 
 export default function App() {
-    return (
-        <Router>
-            <div>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/">Home</Link>
-                        </li>
-                        <li>
-                            <Link to="/about">About</Link>
-                        </li>
-                        <li>
-                            <Link to="/users">Users</Link>
-                        </li>
-                        <li>
-                            <Link to="/editor">Editor</Link>
-                        </li>
-                    </ul>
-                </nav>
+    const { user, isLoggedIn, login, logout } = useContext(UserContext);
 
-                {/* A <Switch> looks through its children <Route>s and
+    return isLoggedIn === null ? <div>Loading...</div> : (
+        <>
+            <button onClick={logout}>Logout</button>
+            <Router>
+                <div>
+                    <nav>
+                        <ul>
+                            <li>
+                                <Link to="/">Home</Link>
+                            </li>
+                            {
+                                !isLoggedIn ? (
+                                    <>
+                                        <li>
+                                            <Link to="/login">Login</Link>
+                                        </li>
+                                    </>
+                                ) : (
+                                    <>
+                                        <li>
+                                            <Link to="/jobs/create">Create Job</Link>
+                                        </li>
+                                    </>
+                                )
+                            }
+                            <li>
+                                <Link to="/jobs">View Jobs</Link>
+                            </li>
+                            <li>
+                                <Link to="/users">Users</Link>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    {/* A <Switch> looks through its children <Route>s and
               renders the first one that matches the current URL. */}
-                <Switch>
-                    <Route path="/about">
-                        <About />
-                    </Route>
-                    <Route path="/users">
-                        <Users />
-                    </Route>
-                    <Route path="/editor">
-                        <Editor />
-                    </Route>
-                    <Route path="/">
-                        <Home />
-                    </Route>
-                </Switch>
-            </div>
-        </Router>
-    );
+                    <Switch>
+                        <Route exact path="/login">
+                            {isLoggedIn ? <Redirect to="/" /> : <LoginForm onLogin={login} />}
+                        </Route>
+                        <Route exact path="/jobs/create">
+                            {!isLoggedIn ? <Redirect to="/" /> : <JobForm />}
+                        </Route>
+                        <Route exact path="/jobs">
+                            <JobList />
+                        </Route>
+                        <Redirect to="/" />
+                        <Route exact path="/users">
+                            <Users />
+                        </Route>
+                        <Route exact path="/">
+                            <Home />
+                        </Route>
+                        <Route>
+                            <Error />
+                        </Route>
+                    </Switch>
+                </div>
+            </Router>
+        </>);
+}
+
+function Error() {
+    return <div>404</div>
 }
 
 function Home() {
@@ -61,51 +91,4 @@ function About() {
 
 function Users() {
     return <h2>Users</h2>;
-}
-
-function Editor() {
-    const [editorState, setEditorState] = React.useState(
-        () => EditorState.createEmpty(),
-    );
-
-    function saveEditorContent(raw: RawDraftContentState) {
-        console.log(raw);
-    }
-
-    function handleChange(editorState: EditorState) {
-
-        // Convert to raw js object
-        const raw = convertToRaw(editorState.getCurrentContent());
-
-        // Save raw js object to local storage
-        saveEditorContent(raw);
-        setEditorState(editorState);
-    };
-
-    function renderContentAsRawJs() {
-        const contentState = editorState.getCurrentContent();
-        const raw = convertToRaw(contentState);
-
-        return JSON.stringify(raw, null, 2);
-    }
-
-    function renderContentAsPlainText() {
-        const plaintext = editorState.getCurrentContent().getPlainText();
-
-        return plaintext;
-    }
-
-    return <>
-        <DraftEditor
-            editorState={editorState}
-            toolbarClassName="toolbarClassName"
-            wrapperClassName="wrapperClassName"
-            editorClassName="editorClassName"
-            onEditorStateChange={handleChange}
-            // toolbarHidden
-            // readOnly
-        />
-        <pre>{renderContentAsRawJs()}</pre>
-        <div>{renderContentAsPlainText()}</div>
-    </>;
 }
