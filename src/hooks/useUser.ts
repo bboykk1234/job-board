@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { UserLogin, UserProfile } from "../../@types";
+import { LoginFormFieldValues, UserProfile } from "../../@types";
 import { useCookies } from "react-cookie";
 import axios, { AxiosResponse } from "axios";
 
@@ -32,7 +32,7 @@ export const useUser = () => {
         }
     }
 
-    async function login({ username, password }: UserLogin) {
+    async function login({ username, password }: LoginFormFieldValues) {
         try {
             const res = await axios.post("/auth/login", {
                 username,

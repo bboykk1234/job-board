@@ -5,9 +5,12 @@ import { useForm, Controller } from "react-hook-form";
 import AsyncSelect from 'react-select/async';
 import axios from "axios";
 import EmploymentTypeSelect from "./EmploymentTypeSelect";
+import { useHistory } from "react-router";
+import { useEffect } from "react";
 
 export default function JobForm() {
-    const { register, handleSubmit, control } = useForm<JobFormFieldValues>({
+    const history = useHistory();
+    const { register, handleSubmit, control, formState: { errors } } = useForm<JobFormFieldValues>({
         defaultValues: {
             description: { blocks: [], entityMap: {} }
         }
@@ -17,12 +20,12 @@ export default function JobForm() {
         try {
             const skills = values.skills || [];
             delete values.skills;
-            const { data } = await axios.post("/jobs", {
+            await axios.post("/jobs", {
                 ...values,
+                description: JSON.stringify(values.description),
                 skillIds: skills.map(skill => skill.id),
             });
-
-            console.log(data);
+            history.push("/jobs/created");
         } catch (err) {
             console.log(err);
         }
@@ -32,6 +35,11 @@ export default function JobForm() {
         return axios.get<Skill[]>("skills", { params: { start: input } })
             .then(data => data.data);
     }
+
+    useEffect(() => {
+        console.log(errors);
+
+    }, [errors]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -59,7 +59,25 @@ export const create = async (req: ValidatedRequest<PostJobApplicationRequestSche
 
     const jobApplication = JobApplication.populateViaPostReq(req);
     await jobApplication.save();
-    fs.renameSync(file.path, `storage/resumes/${jobId}.pdf`);
+    fs.renameSync(file.path, `storage/resumes/${jobApplication.id}.pdf`);
 
     res.json(jobApplication);
+};
+
+export const download = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const jobApplication = await JobApplication.findOne(id);
+
+    if (!jobApplication) {
+        res.redirect("/resume_not_found");
+        return;
+    }
+
+    res.setHeader('Content-disposition', `attachment; filename=${jobApplication.getName()}.pdf`);
+    res.setHeader('Content-type', 'application/pdf');
+    res.contentType('application/pdf')
+        .download(
+            `storage/resumes/${jobApplication.id}.pdf`,
+            `${jobApplication.getName()}.pdf`,
+        );
 };

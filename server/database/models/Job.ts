@@ -70,7 +70,7 @@ export class Job extends Base {
         const job = new Job();
         job.title = title;
         job.location = location;
-        job.description = JSON.stringify(description);
+        job.description = description;
         job.minYearsWorkExp = minYearsWorkExp;
         job.keywords = "";
         job.employmentType = employmentType;
@@ -99,7 +99,7 @@ export class Job extends Base {
             return "";
         }
 
-        const { blocks } = JSON.parse(this.description) as RawDraftContentState;
+        const { blocks = [] } = JSON.parse(this.description) as RawDraftContentState;
         const nonEmptyBlockTexts = blocks.map(block => block?.text?.trim() || "")
             .filter(text => text != "");
 

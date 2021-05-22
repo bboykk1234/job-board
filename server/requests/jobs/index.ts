@@ -7,7 +7,7 @@ export const saveJobBodySchema = Joi.object({
     location: Joi.string().required(),
     employmentTypeId: Joi.number().required(),
     skillIds: Joi.array().items(Joi.number()).min(1).required(),
-    description: Joi.object().required(),
+    description: Joi.string().required(),
     minYearsWorkExp: Joi.number().allow(null).required(),
 });
 
@@ -17,7 +17,7 @@ export interface SaveJobRequestSchema extends ValidatedRequestSchema {
         location: string,
         employmentTypeId: number,
         skillIds: number[],
-        description: object,
+        description: string,
         minYearsWorkExp: number | null,
         employmentType?: EmploymentType,
     }

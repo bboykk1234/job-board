@@ -1,11 +1,5 @@
 import { RawDraftContentState } from "draft-js";
-import { EditorState } from "react-draft-wysiwyg";
 import { Control } from "react-hook-form";
-
-export interface UserLogin {
-    username: string,
-    password: string,
-}
 
 export interface UserProfile {
     id: number,
@@ -22,6 +16,7 @@ export interface Job {
     location: string,
     minYearsWorkExp: number,
     employmentTypeId: number,
+    descEditorContent?: RawDraftContentState
 }
 
 export interface EmploymentType {
@@ -33,7 +28,12 @@ export interface EmploymentType {
 
 export interface Skill extends EmploymentType {};
 
-export type LoginFn = ({username, password}: UserLogin) => Promise<void>;
+export type LoginFormFieldValues = {
+    username: string,
+    password: string,
+}
+
+export type LoginFn = ({username, password}: LoginFormFieldValues) => Promise<void>;
 
 export type NoArgsVoidFn = () => void;
 

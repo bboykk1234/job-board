@@ -1,11 +1,12 @@
 import { JobApplicationFormFieldValues } from "../../@types";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
 
 export default function JobApplicationForm() {
+    const history = useHistory();
     const { register, handleSubmit, formState: { errors } } = useForm<JobApplicationFormFieldValues>();
-    const { id: jobId } = useParams<{id: string}>();
+    const { id: jobId } = useParams<{ id: string }>();
 
     async function onSubmit(values: JobApplicationFormFieldValues) {
         try {
@@ -18,7 +19,7 @@ export default function JobApplicationForm() {
             formData.append("resume", values.resume.item(0) || "");
             formData.append("jobId", jobId);
 
-            const { data } = await axios.post(
+            await axios.post(
                 "/job_applications",
                 formData,
                 {
@@ -27,8 +28,7 @@ export default function JobApplicationForm() {
                     }
                 });
 
-            console.log(data);
-
+            history.push("/jobs/applied");
         } catch (err) {
             console.log(err);
         }

@@ -1,40 +1,30 @@
-import React, { ChangeEvent, FormEvent, useState } from 'react';
-import { LoginFormProps, UserLogin } from '../../@types';
+import { useForm } from 'react-hook-form';
+import { LoginFormFieldValues, LoginFormProps } from '../../@types';
 
 export default function LoginForm({ onLogin }: LoginFormProps) {
-    const [formState, setFormState] = useState<UserLogin>({
-        username: "",
-        password: ""
-    });
+    const { register, handleSubmit } = useForm<LoginFormFieldValues>();
 
-    const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setFormState({
-            ...formState,
-            username: e.currentTarget.value,
-        });
-    };
-
-    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setFormState({
-            ...formState,
-            password: e.currentTarget.value,
-        });
-    };
-
-    const handleSubmit = (e: FormEvent<HTMLFormElement | HTMLButtonElement>) => {
-        e.preventDefault();
-        onLogin(formState);
+    const onSubmit = (values: LoginFormFieldValues) => {
+        onLogin(values);
     }
 
-    const { username, password } = formState;
-
     return (
-        <>
-            <form action="POST" onSubmit={handleSubmit}>
-                <input type="text" name="username" id="username" value={username} onChange={handleUsernameChange} />
-                <input type="password" name="password" id="password" value={password} onChange={handlePasswordChange} />
-                <button type="submit" onClick={handleSubmit}>Login</button>
+        <div className="align-self-center m-auto p-2" style={{maxWidth: "330px"}}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <img className="mb-4" src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" />
+                <h1 className="h3 mb-3 fw-normal">Please log in</h1>
+
+                <div className="form-floating">
+                    <input type="text" className="form-control" id="username" placeholder="Username" {...register("username", { required: true })} />
+                    <label htmlFor="floatingInput">Username</label>
+                </div>
+                <div className="form-floating">
+                    <input type="password" className="form-control" id="password" placeholder="Password" {...register("password", { required: true })} />
+                    <label htmlFor="password">Password</label>
+                </div>
+                <button className="w-100 btn btn-lg btn-primary" type="submit">Log in</button>
+                <p className="mt-5 mb-3 text-muted">© 2017–2021</p>
             </form>
-        </>
+        </div>
     );
 }

@@ -46,3 +46,12 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 To learn React, check out the [React documentation](https://reactjs.org/).
 
 https://github.com/Anonyfox/rake-js
+
+TODO
+- Create job form
+- Update job form
+- View job detail
+- View job list
+- Apply job
+- Login
+- Search job/candidate list
