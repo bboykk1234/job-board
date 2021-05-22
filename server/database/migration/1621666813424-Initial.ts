@@ -1,11 +1,11 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class Initial1621560155897 implements MigrationInterface {
-    name = 'Initial1621560155897'
+export class Initial1621666813424 implements MigrationInterface {
+    name = 'Initial1621666813424'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query("CREATE TABLE `employment_types` (`id` int UNSIGNED NOT NULL AUTO_INCREMENT, `created_at` timestamp NULL, `updated_at` timestamp NULL, `name` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
-        await queryRunner.query("CREATE TABLE `skills` (`id` int UNSIGNED NOT NULL AUTO_INCREMENT, `created_at` timestamp NULL, `updated_at` timestamp NULL, `name` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
+        await queryRunner.query("CREATE TABLE `skills` (`id` int UNSIGNED NOT NULL AUTO_INCREMENT, `created_at` timestamp NULL, `updated_at` timestamp NULL, `name` varchar(255) NOT NULL, INDEX `IDX_81f05095507fd84aa2769b4a52` (`name`), PRIMARY KEY (`id`)) ENGINE=InnoDB");
         await queryRunner.query("CREATE TABLE `job_skill` (`id` int UNSIGNED NOT NULL AUTO_INCREMENT, `created_at` timestamp NULL, `updated_at` timestamp NULL, `job_id` int UNSIGNED NOT NULL, `skill_id` int UNSIGNED NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB");
         await queryRunner.query("CREATE TABLE `users` (`id` int UNSIGNED NOT NULL AUTO_INCREMENT, `created_at` timestamp NULL, `updated_at` timestamp NULL, `username` varchar(30) NOT NULL, `password` varchar(255) NOT NULL, UNIQUE INDEX `IDX_fe0bb3f6520ee0469504521e71` (`username`), PRIMARY KEY (`id`)) ENGINE=InnoDB");
         await queryRunner.query("CREATE TABLE `jobs` (`id` int UNSIGNED NOT NULL AUTO_INCREMENT, `created_at` timestamp NULL, `updated_at` timestamp NULL, `title` varchar(255) NOT NULL, `description` text NOT NULL, `keywords` text NOT NULL, `location` varchar(255) NOT NULL, `min_years_work_exp` tinyint NULL, `employment_type_id` int UNSIGNED NOT NULL, `creator_id` int UNSIGNED NULL, FULLTEXT INDEX `IDX_2c6c1ac266e0b3f95fed92e4fd` (`keywords`), PRIMARY KEY (`id`)) ENGINE=InnoDB");
@@ -31,6 +31,7 @@ export class Initial1621560155897 implements MigrationInterface {
         await queryRunner.query("DROP INDEX `IDX_fe0bb3f6520ee0469504521e71` ON `users`");
         await queryRunner.query("DROP TABLE `users`");
         await queryRunner.query("DROP TABLE `job_skill`");
+        await queryRunner.query("DROP INDEX `IDX_81f05095507fd84aa2769b4a52` ON `skills`");
         await queryRunner.query("DROP TABLE `skills`");
         await queryRunner.query("DROP TABLE `employment_types`");
     }

@@ -1,4 +1,5 @@
 import express from "express";
+import { isString } from "lodash";
 import { Skill } from "../../database/models/Skill";
 
 const skillRouter = express.Router();
@@ -6,9 +7,20 @@ const skillRouter = express.Router();
 skillRouter.get(
     "/",
     async (req, res) => {
-        const types = await Skill.find({ order: { name: "ASC" } });
+        const { start = "" } = req.query;
+        const table = Skill.getRepository().metadata.tableName;
+        const query = Skill.getRepository()
+            .createQueryBuilder();
 
-        res.json(types);
+        if (isString(start) &&  start.trim()) {
+            query.where("name LIKE :start", { start: `${start}%` });
+        } else {
+            query.orderBy({ name: "ASC" });
+        }
+
+        const skills = await query.getMany();
+
+        res.json(skills);
     }
 );
 

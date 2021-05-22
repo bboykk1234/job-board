@@ -12,7 +12,6 @@ export default function JobForm() {
             description: { blocks: [], entityMap: {} }
         }
     });
-    // const [selectedValues, setSelectedValues] = useState<Skill[]>([]);
 
     async function onSubmit(values: JobFormFieldValues) {
         try {
@@ -28,13 +27,9 @@ export default function JobForm() {
     }
 
     function loadSkillList(input: string) {
-        return axios.get<Skill[]>("skills", { params: { query: input } })
+        return axios.get<Skill[]>("skills", { params: { start: input } })
             .then(data => data.data);
     }
-
-    // function handleChange(value: OptionsType<Skill>) {
-    //     setSelectedValues(value as SetStateAction<Skill[]>)
-    // }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -68,6 +63,7 @@ export default function JobForm() {
                             <AsyncSelect
                                 isMulti
                                 hideSelectedOptions
+                                placeholder="Type to search for skill(s)..."
                                 value={value}
                                 getOptionLabel={e => e.name}
                                 getOptionValue={e => e.id.toString()}
