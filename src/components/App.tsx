@@ -58,6 +58,9 @@ export default function App() {
                         <Route exact path="/jobs/create">
                             {!isLoggedIn ? <Redirect to="/" /> : <JobForm />}
                         </Route>
+                        <Route exact path="/jobs/:id/apply">
+                            <JobApplicationForm />
+                        </Route>
                         <Route exact path="/jobs">
                             <JobList />
                         </Route>

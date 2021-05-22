@@ -51,11 +51,27 @@ export type LoginFormProps = {
 export type JobFormFieldValues = {
     title:string,
     location: string,
-    employmentTypeId?: number,
+    employmentTypeId: number,
     minYearsWorkExp?: number,
     description: RawDraftContentState,
-    skills: Skill[]
+    skills?: Skill[]
 }
+
+export interface JobApplicationFormFieldValues {
+    jobId:number,
+    firstName: string,
+    lastName: number,
+    email: string,
+    phoneNumber: number,
+    address: string,
+    city: string,
+    province: string,
+    postalCode: string,
+    country: string,
+    resume: FileList,
+}
+
+export type JobApplicationFormFieldKeys = keyof JobApplicationFormFieldValues;
 
 export type EditorProps = {
     control: Control<JobFormFieldValues>,

@@ -3,9 +3,11 @@ import { createValidator } from "express-joi-validation";
 import passport from "passport";
 import { create, get, list } from "../../controllers/job_applications";
 import { postJobApplicationBodySchema } from "../../requests/job_applications";
+import multer from "multer";
 
 const jobApplicationRouter = express.Router();
 const validator = createValidator({ passError: true });
+const upload = multer({ dest: "tmp/uploads/" });
 
 jobApplicationRouter.get(
     "/:id",
@@ -21,6 +23,7 @@ jobApplicationRouter.get(
 
 jobApplicationRouter.post(
     "/",
+    upload.single("resume"),
     validator.body(postJobApplicationBodySchema),
     create
 );

@@ -15,9 +15,11 @@ export default function JobForm() {
 
     async function onSubmit(values: JobFormFieldValues) {
         try {
+            const skills = values.skills || [];
+            delete values.skills;
             const { data } = await axios.post("/jobs", {
                 ...values,
-                description: JSON.stringify(values.description),
+                skillIds: skills.map(skill => skill.id),
             });
 
             console.log(data);
@@ -101,7 +103,7 @@ export default function JobForm() {
                 }}
             />
 
-            <button type="submit" className="btn btn-primary">Submit</button>
+            <button type="submit" className="btn btn-primary">Post</button>
         </form>
     );
 }
