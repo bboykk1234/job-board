@@ -3,7 +3,9 @@ import { ValidatedRequest } from "express-joi-validation";
 import { difference, uniq } from "lodash";
 import { EmploymentType } from "../../database/models/EmploymentType";
 import { Job } from "../../database/models/Job";
+import { JobApplication } from "../../database/models/JobApplication";
 import { JobSkill } from "../../database/models/JobSkill";
+import { Level } from "../../database/models/Level";
 import { Skill } from "../../database/models/Skill";
 import { SaveJobRequestSchema } from "../../requests/jobs";
 
@@ -20,6 +22,11 @@ export const get = async (req: Request, res: Response) => {
     res.json(job);
 };
 
+export const getApplications = async (req: Request, res: Response) => {
+    const jobApplications = await JobApplication.find({ jobId: parseInt(req.params.id) });
+    res.json(jobApplications);
+}
+
 export const list = async (req: Request, res: Response) => {
     const page = (req.query.page || 1) as number;
     const take = 10;
@@ -30,7 +37,7 @@ export const list = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: ValidatedRequest<SaveJobRequestSchema>, res: Response) => {
-    const { employmentTypeId, skillIds } = req.body;
+    const { employmentTypeId, skillIds, levelId } = req.body;
     const employmentType = await EmploymentType.findOne(employmentTypeId);
 
     if (!employmentType) {
@@ -41,7 +48,15 @@ export const create = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
         return;
     }
 
-    req.body.employmentType = employmentType;
+    const level = await Level.findOne(levelId);
+
+    if (!level) {
+        res.status(400).json({
+            type: "body",
+            message: "Invalid level selected.",
+        });
+        return;
+    }
 
     const skills = await Skill.findByIds(uniq(skillIds));
 
@@ -80,7 +95,7 @@ export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
         return;
     }
 
-    const { employmentTypeId, skillIds } = req.body;
+    const { employmentTypeId, skillIds, levelId } = req.body;
     const uniqSkillIds = uniq(skillIds);
     const employmentType = await EmploymentType.findOne(employmentTypeId);
 
@@ -88,6 +103,16 @@ export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
         res.status(400).json({
             type: "body",
             message: "Invalid employment type selected.",
+        });
+        return;
+    }
+
+    const level = await Level.findOne(levelId);
+
+    if (!level) {
+        res.status(400).json({
+            type: "body",
+            message: "Invalid level selected.",
         });
         return;
     }

@@ -9,6 +9,8 @@ import { RawDraftContentState } from "draft-js";
 import keywordExtractor from "keyword-extractor";
 import { Skill } from "./Skill";
 import { uniq } from "lodash";
+import { Level } from "./Level";
+import { JobFunction } from "./JobFunction";
 
 @Entity({ name: "jobs" })
 export class Job extends Base {
@@ -53,19 +55,35 @@ export class Job extends Base {
     })
     employmentTypeId!: number;
 
+    @Column({
+        name: "level_id",
+        unsigned: true,
+    })
+    levelId!: number;
+
+    @Column({
+        name: "job_function_id",
+        unsigned: true,
+    })
+    jobFunctionId!: number;
+
     @ManyToOne(() => EmploymentType)
     @JoinColumn({ name: "employment_type_id" })
     employmentType?: EmploymentType;
+
+    @ManyToOne(() => Level)
+    @JoinColumn({ name: "level_id" })
+    level?: Level;
+
+    @ManyToOne(() => JobFunction)
+    @JoinColumn({ name: "job_function_id" })
+    jobFunction?: JobFunction;
 
     @OneToMany(() => JobSkill, jobSkill => jobSkill.job)
     jobSkillPivot?: JobSkill[];
 
     static populateViaPostReq(req: ValidatedRequest<SaveJobRequestSchema>): Job {
-        const { title, location, employmentType, description, minYearsWorkExp } = req.body;
-
-        if (!employmentType) {
-            throw new Error("Missing employment type to populate new job.");
-        }
+        const { title, location, description, minYearsWorkExp, employmentTypeId, levelId, jobFunctionId } = req.body;
 
         const job = new Job();
         job.title = title;
@@ -73,17 +91,27 @@ export class Job extends Base {
         job.description = description;
         job.minYearsWorkExp = minYearsWorkExp;
         job.keywords = "";
-        job.employmentType = employmentType;
+        job.employmentTypeId = employmentTypeId;
+        job.levelId = levelId
+        job.jobFunctionId = jobFunctionId;
         job.creator = req.user as User;
 
         return job;
     }
 
     populateViaPutReq(req: ValidatedRequest<SaveJobRequestSchema>): Job {
-        const { title, location, employmentTypeId, description, minYearsWorkExp } = req.body;
+        const { title, location, employmentTypeId, description, minYearsWorkExp, levelId, jobFunctionId } = req.body;
 
         if (this.employmentTypeId != employmentTypeId) {
             this.employmentTypeId = employmentTypeId;
+        }
+
+        if (this.levelId != levelId) {
+            this.levelId = levelId;
+        }
+
+        if (this.jobFunctionId != jobFunctionId) {
+            this.jobFunctionId = jobFunctionId;
         }
 
         this.title = title;

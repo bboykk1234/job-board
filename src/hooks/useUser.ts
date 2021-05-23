@@ -17,10 +17,6 @@ export const useUser = () => {
         setUserBasedOnToken();
     }, [cookies.tk]);
 
-    useEffect(() => {
-        console.log(user);
-    }, [user]);
-
     async function setUserBasedOnToken() {
         try {
             const res = await axios.get<any, AxiosResponse<UserProfile>>("/auth/users");
@@ -42,7 +38,7 @@ export const useUser = () => {
             const expires = new Date();
             expires.setHours(expires.getHours() + 1);
             if (res.data.token) {
-                setCookie('tk', res.data.token, { expires });
+                setCookie('tk', res.data.token, { expires, path: "/" });
                 return;
             }
         } catch (err) {

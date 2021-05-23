@@ -12,6 +12,7 @@ import employmentTypeRouter from "./routes/employment_types";
 import jobApplicationRouter from "./routes/job_applications";
 import cors from "cors";
 import skillRouter from "./routes/skills";
+import jobFunctionRouter from "./routes/job_functions";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ app.get("/api/auth/users", passport.authenticate("jwt", { session: false }), (re
 app.use("/api/jobs", jobRouter);
 app.use("/api/levels", levelRouter);
 app.use("/api/employment_types", employmentTypeRouter);
+app.use("/api/job_functions", jobFunctionRouter);
 app.use("/api/job_applications", jobApplicationRouter);
 app.use("/api/skills", skillRouter);
 

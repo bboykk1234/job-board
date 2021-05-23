@@ -1,30 +1,31 @@
+import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import { LoginFormFieldValues, LoginFormProps } from '../../@types';
+import { LoginFormFieldValues } from '../../@types';
+import { UserContext } from '../contexts/User';
+import FormContainer from './FormContainer';
 
-export default function LoginForm({ onLogin }: LoginFormProps) {
+export default function LoginForm() {
+    const { login } = useContext(UserContext);
     const { register, handleSubmit } = useForm<LoginFormFieldValues>();
 
-    const onSubmit = (values: LoginFormFieldValues) => {
-        onLogin(values);
+    const onSubmit = async (values: LoginFormFieldValues) => {
+        await login(values);
     }
 
     return (
-        <div className="align-self-center m-auto p-2" style={{maxWidth: "330px"}}>
+        <FormContainer>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <img className="mb-4" src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" />
-                <h1 className="h3 mb-3 fw-normal">Please log in</h1>
-
-                <div className="form-floating">
-                    <input type="text" className="form-control" id="username" placeholder="Username" {...register("username", { required: true })} />
-                    <label htmlFor="floatingInput">Username</label>
+                <h4 className="mb-3 text-center">Please log in</h4>
+                <div className="mb-3">
+                    <label htmlFor="username" className="form-label">Username</label>
+                    <input type="text" className="form-control" id="username" {...register("username", { required: true, maxLength: 30 })} />
                 </div>
-                <div className="form-floating">
-                    <input type="password" className="form-control" id="password" placeholder="Password" {...register("password", { required: true })} />
-                    <label htmlFor="password">Password</label>
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label">Password</label>
+                    <input type="password" className="form-control" id="password" {...register("password", { required: true })} />
                 </div>
                 <button className="w-100 btn btn-lg btn-primary" type="submit">Log in</button>
-                <p className="mt-5 mb-3 text-muted">© 2017–2021</p>
             </form>
-        </div>
+        </FormContainer>
     );
 }

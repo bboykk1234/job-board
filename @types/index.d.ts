@@ -19,7 +19,35 @@ export interface Job {
     descEditorContent?: RawDraftContentState
 }
 
+export interface JobApplication {
+    id: number,
+    jobId:number,
+    firstName: string,
+    lastName: number,
+    email: string,
+    phoneNumber: number,
+    address: string,
+    city: string,
+    province: string,
+    postalCode: string,
+    country: string,
+}
+
 export interface EmploymentType {
+    id: number,
+    name: string,
+    createdAt: string,
+    updatedAt: string,
+}
+
+export interface Level {
+    id: number,
+    name: string,
+    createdAt: string,
+    updatedAt: string,
+}
+
+export interface JobFunction {
     id: number,
     name: string,
     createdAt: string,
@@ -44,30 +72,18 @@ export type UserContext = {
     logout: NoArgsVoidFn,
 }
 
-export type LoginFormProps = {
-    onLogin: LoginFn,
-}
-
 export type JobFormFieldValues = {
     title:string,
     location: string,
-    employmentTypeId: number,
+    employmentType: EmploymentType,
+    level: Level,
+    jobFunction: JobFunction,
     minYearsWorkExp?: number,
     description: RawDraftContentState,
-    skills?: Skill[]
+    skills: Skill[]
 }
 
-export interface JobApplicationFormFieldValues {
-    jobId:number,
-    firstName: string,
-    lastName: number,
-    email: string,
-    phoneNumber: number,
-    address: string,
-    city: string,
-    province: string,
-    postalCode: string,
-    country: string,
+export interface JobApplicationFormFieldValues extends JobApplication {
     resume: FileList,
 }
 

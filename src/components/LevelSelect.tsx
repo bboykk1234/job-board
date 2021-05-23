@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { EmploymentType, JobFormFieldValues } from "../../@types";
-import { Controller, Control } from "react-hook-form";
+import { JobFormFieldValues, Level } from "../../@types";
+import { Control, Controller } from "react-hook-form";
 import axios from "axios";
 import Select from "react-select";
 
-const EmploymentTypeSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ control }) => {
-    const [employmentTypes, setEmploymentTypes] = useState<EmploymentType[]>([]);
+const LevelSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ control }) => {
+    const [levels, setLevels] = useState<Level[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        async function loadEmploymentTypes() {
+        async function loadLevels() {
             try {
-                const { data } = await axios.get<EmploymentType[]>("/employment_types");
-                setEmploymentTypes(data);
+                const { data } = await axios.get<Level[]>("/levels");
+                setLevels(data);
                 setIsLoading(false);
             } catch (err) {
                 console.log(err);
             }
         }
-        loadEmploymentTypes();
+        loadLevels();
     }, []);
 
     return isLoading
@@ -26,23 +26,23 @@ const EmploymentTypeSelect: React.FC<{control: Control<JobFormFieldValues>}> = (
         : (
             <Controller
                         control={control}
-                        name="employmentType"
+                        name="level"
                         rules={{
                             required: {
                                 value: true,
-                                message: "Please select an employment type",
+                                message: "Please select a seniority level",
                             },
                         }}
                         render={({ field: { onChange }, fieldState: { error } }) => {
                             return (
                                 <>
-                                    <label className="form-label" htmlFor="employment_types">Employment Type</label>
+                                    <label className="form-label" htmlFor="levels">Levels</label>
                                     <Select
-                                        id="employment_types"
+                                        id="levels"
                                         isSearchable
                                         getOptionLabel={e => e.name}
                                         getOptionValue={e => e.id.toString()}
-                                        options={employmentTypes}
+                                        options={levels}
                                         placeholder="Type to filter"
                                         onChange={onChange}
                                     />
@@ -54,4 +54,4 @@ const EmploymentTypeSelect: React.FC<{control: Control<JobFormFieldValues>}> = (
         );
 }
 
-export default EmploymentTypeSelect;
+export default LevelSelect;

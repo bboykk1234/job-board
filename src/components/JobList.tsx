@@ -1,10 +1,13 @@
 import axios, { AxiosResponse } from "axios";
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Job } from "../../@types";
+import { UserContext } from "../contexts/User";
+import ContentContainer from "./ContentContainer";
 
 export default function JobList() {
     const [jobs, setJobs] = useState<Job[]>([]);
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         loadJobs();
@@ -19,10 +22,9 @@ export default function JobList() {
         }
     }
 
-    return (
-        <div className="my-3 p-3 bg-body rounded shadow-sm">
-            <h6 className="border-bottom pb-2 mb-0">Jobs Openings</h6>
-            {jobs.map(({ title, id, location }) => (
+    function renderJobItems(jobs: Job[]) {
+        return (
+            jobs.map(({ title, id, location }) => (
                 <div className="row text-muted pt-3" key={id}>
                     <div className="col-11">
                         <Link to={`/jobs/${id}`} className="d-flex text-decoration-none text-muted">
@@ -32,10 +34,27 @@ export default function JobList() {
                     </div>
                     <div className="col-1 text-end">
                         {location}
+                        {
+                            user && (
+                                <Link to={`/jobs/${id}/applications`}>View Applications</Link>
+                            )
+                        }
                     </div>
                 </div>
-            ))}
+            ))
+        );
+    }
 
-        </div>
+    return (
+        <ContentContainer>
+            <h4 className="border-bottom pb-2 mb-0 text-center">Jobs Openings</h4>
+            {jobs.length
+                ? <div style={{minHeight: "300px"}}>{renderJobItems(jobs)}</div>
+                : (
+                    <div className="d-flex justify-content-center align-items-center" style={{ height: "250px" }}>
+                        <p className="text-muted">No job openings at the moment</p>
+                    </div>
+                )}
+        </ContentContainer>
     );
 }

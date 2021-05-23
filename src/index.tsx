@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import "bootstrap/dist/css/bootstrap.css";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import './index.css';
+import "@popperjs/core";
+import "bootstrap";
 import App from './components/App';
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';

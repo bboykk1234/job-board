@@ -31,7 +31,7 @@ jobApplicationRouter.post(
 
 jobApplicationRouter.get(
     "/:id/download",
-    passport.authenticate("jwt", { session: false }),
+    passport.authenticate("jwt-query", { session: false }),
     download
 );
 

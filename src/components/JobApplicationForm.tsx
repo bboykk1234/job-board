@@ -12,7 +12,7 @@ export default function JobApplicationForm() {
         try {
             let formData = new FormData();
             for (const [key, value] of Object.entries(values)) {
-                if (key != "resume") {
+                if (key !== "resume") {
                     formData.append(key, value)
                 }
             }
@@ -85,7 +85,7 @@ export default function JobApplicationForm() {
                 })} />
                 {errors.resume?.message}
             </div>
-            <button type="submit" className="btn btn-primary">Apply</button>
+            <button className="w-100 btn btn-lg btn-primary" type="submit">Apply</button>
         </form>
     );
 }

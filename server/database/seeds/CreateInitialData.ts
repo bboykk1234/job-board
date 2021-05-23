@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { EmploymentType } from '../models/EmploymentType';
 import { Level } from '../models/Level';
 import { Skill } from '../models/Skill';
+import { JobFunction } from '../models/JobFunction';
 
 export default class CreateInitialData implements Seeder {
     public async run(factory: Factory, connection: Connection): Promise<any> {
@@ -66,6 +67,39 @@ export default class CreateInitialData implements Seeder {
                 { name: "LESS", createdAt: new Date(), updatedAt: new Date() },
                 { name: "Amazon Web Services (AWS)", createdAt: new Date(), updatedAt: new Date() },
                 { name: "Google Cloud Platforms (GCP)", createdAt: new Date(), updatedAt: new Date() },
+            ])
+            .execute();
+
+        await connection
+            .createQueryBuilder()
+            .insert()
+            .into(JobFunction)
+            .values([
+                { name: "Accounting", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Adminstrative", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Arts and Design", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Business Development", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Community and Social Services", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Consulting", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Education", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Engineering", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Entrepreneurship", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Finance", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Healthcare Services", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Human Resources", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Information Technology", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Legal", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Marketing", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Media and Communication", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Operations", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Product Management", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Program and Project Management", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Purchasing", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Quality Assurance", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Real Estate", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Research", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Sales", createdAt: new Date(), updatedAt: new Date() },
+                { name: "Support", createdAt: new Date(), updatedAt: new Date() },
             ])
             .execute();
     }

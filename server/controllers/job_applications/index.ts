@@ -73,8 +73,8 @@ export const download = async (req: Request, res: Response) => {
         return;
     }
 
-    res.setHeader('Content-disposition', `attachment; filename=${jobApplication.getName()}.pdf`);
-    res.setHeader('Content-type', 'application/pdf');
+    // res.setHeader('Content-disposition', `attachment; filename=${jobApplication.getName()}.pdf`);
+    // res.setHeader('Content-type', 'application/pdf');
     res.contentType('application/pdf')
         .download(
             `storage/resumes/${jobApplication.id}.pdf`,

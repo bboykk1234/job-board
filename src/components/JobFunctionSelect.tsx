@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { EmploymentType, JobFormFieldValues } from "../../@types";
-import { Controller, Control } from "react-hook-form";
+import { JobFormFieldValues, JobFunction } from "../../@types";
+import { Control, Controller } from "react-hook-form";
 import axios from "axios";
 import Select from "react-select";
 
-const EmploymentTypeSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ control }) => {
-    const [employmentTypes, setEmploymentTypes] = useState<EmploymentType[]>([]);
+const JobFunctionSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ control }) => {
+    const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        async function loadEmploymentTypes() {
+        async function loadJobFunctions() {
             try {
-                const { data } = await axios.get<EmploymentType[]>("/employment_types");
-                setEmploymentTypes(data);
+                const { data } = await axios.get<JobFunction[]>("/job_functions");
+                setJobFunctions(data);
                 setIsLoading(false);
             } catch (err) {
                 console.log(err);
             }
         }
-        loadEmploymentTypes();
+        loadJobFunctions();
     }, []);
 
     return isLoading
@@ -26,23 +26,23 @@ const EmploymentTypeSelect: React.FC<{control: Control<JobFormFieldValues>}> = (
         : (
             <Controller
                         control={control}
-                        name="employmentType"
+                        name="jobFunction"
                         rules={{
                             required: {
                                 value: true,
-                                message: "Please select an employment type",
+                                message: "Please select a job function",
                             },
                         }}
                         render={({ field: { onChange }, fieldState: { error } }) => {
                             return (
                                 <>
-                                    <label className="form-label" htmlFor="employment_types">Employment Type</label>
+                                    <label className="form-label" htmlFor="job-functions">Job Function</label>
                                     <Select
-                                        id="employment_types"
+                                        id="job-functions"
                                         isSearchable
                                         getOptionLabel={e => e.name}
                                         getOptionValue={e => e.id.toString()}
-                                        options={employmentTypes}
+                                        options={jobFunctions}
                                         placeholder="Type to filter"
                                         onChange={onChange}
                                     />
@@ -54,4 +54,4 @@ const EmploymentTypeSelect: React.FC<{control: Control<JobFormFieldValues>}> = (
         );
 }
 
-export default EmploymentTypeSelect;
+export default JobFunctionSelect;
