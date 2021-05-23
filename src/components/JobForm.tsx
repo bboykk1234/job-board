@@ -13,7 +13,7 @@ import JobFunctionSelect from "./JobFunctionSelect";
 
 export default function JobForm() {
     const history = useHistory();
-    const { register, handleSubmit, control, formState: { errors } } = useForm<JobFormFieldValues>({
+    const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm<JobFormFieldValues>({
         defaultValues: {
             description: { blocks: [], entityMap: {} }
         }
@@ -21,6 +21,11 @@ export default function JobForm() {
 
     async function onSubmit(values: JobFormFieldValues) {
         try {
+            // By pass type error, it should not be empty form validated
+            if (!(values.employmentType && values.level && values.jobFunction)) {
+                return;
+            }
+
             const {
                 employmentType: { id: employmentTypeId },
                 level: { id: levelId },
@@ -72,10 +77,10 @@ export default function JobForm() {
                 </div>
                 <div className="mb-3 row">
                     <div className="col-6">
-                        <EmploymentTypeSelect control={control} />
+                        <EmploymentTypeSelect control={control} setValue={setValue} getValues={getValues} />
                     </div>
                     <div className="col-6">
-                        <LevelSelect control={control} />
+                        <LevelSelect control={control} setValue={setValue} getValues={getValues} />
                     </div>
                 </div>
                 <div className="mb-3 row">

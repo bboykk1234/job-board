@@ -23,10 +23,10 @@ export default class CreateInitialData implements Seeder {
             .insert()
             .into(EmploymentType)
             .values([
+                { name: "Internship", createdAt: new Date(), updatedAt: new Date() },
                 { name: "Contract", createdAt: new Date(), updatedAt: new Date() },
                 { name: "Part-time", createdAt: new Date(), updatedAt: new Date() },
                 { name: "Full-time", createdAt: new Date(), updatedAt: new Date() },
-                { name: "Internship", createdAt: new Date(), updatedAt: new Date() },
                 { name: "Freelance", createdAt: new Date(), updatedAt: new Date() },
             ])
             .execute();

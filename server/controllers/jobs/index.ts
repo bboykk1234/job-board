@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { ValidatedRequest } from "express-joi-validation";
 import { difference, uniq } from "lodash";
+import { JobsCategorizedByJobFunction } from "../../../@types";
 import { EmploymentType } from "../../database/models/EmploymentType";
 import { Job } from "../../database/models/Job";
 import { JobApplication } from "../../database/models/JobApplication";
+import { JobFunction } from "../../database/models/JobFunction";
 import { JobSkill } from "../../database/models/JobSkill";
 import { Level } from "../../database/models/Level";
 import { Skill } from "../../database/models/Skill";
@@ -28,10 +30,15 @@ export const getApplications = async (req: Request, res: Response) => {
 }
 
 export const list = async (req: Request, res: Response) => {
-    const page = (req.query.page || 1) as number;
-    const take = 10;
-    const skip = take * (page - 1);
-    const jobs = await Job.find({ skip, take });
+    const jobs = await Job.find({
+        select: [
+            "title",
+            "creatorId",
+            "location",
+            "jobFunctionId",
+        ],
+        relations: ["jobFunction", "creator"],
+    });
 
     res.json(jobs);
 };

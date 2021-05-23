@@ -15,9 +15,15 @@ import { JobFunction } from "./JobFunction";
 @Entity({ name: "jobs" })
 export class Job extends Base {
 
+    @Column({
+        unsigned: true,
+        name: "creator_id"
+    })
+    creatorId!: number;
+
     @ManyToOne(() => User)
     @JoinColumn({ name: "creator_id" })
-    creator!: User
+    creator?: User
 
     @Column({
         length: 255,

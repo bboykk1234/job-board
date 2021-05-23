@@ -1,5 +1,6 @@
-import { Entity, Column } from "typeorm";
+import { Entity, Column, OneToMany } from "typeorm";
 import { Base } from "./Base";
+import { Job } from "./Job";
 
 @Entity({ name: "job_functions" })
 export class JobFunction extends Base {
@@ -8,4 +9,7 @@ export class JobFunction extends Base {
         length: 80,
     })
     name!: string;
+
+    @OneToMany(() => Job, job => job.jobFunction)
+    jobs?: Job[];
 }
