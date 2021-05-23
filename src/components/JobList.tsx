@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { JobModel, JobsCategorizedByJobFunction } from "../../@types";
+import { ListJobsCategorizedByJobFunctionResponseSchema } from "../../@types";
 import { UserContext } from "../contexts/User";
 import ContentContainer from "./ContentContainer";
 
 export default function JobList() {
-    const [jobs, setJobs] = useState<JobModel[]>([]);
+    const [jobs, setJobs] = useState<ListJobsCategorizedByJobFunctionResponseSchema>({});
     const { user } = useContext(UserContext);
 
     useEffect(() => {
@@ -15,52 +15,68 @@ export default function JobList() {
 
     async function loadJobs(page = 1) {
         try {
-            const { data } = await axios.get<any, AxiosResponse<JobModel[]>>("/jobs?category=job_function");
+            const { data } = await axios.get<any, AxiosResponse<ListJobsCategorizedByJobFunctionResponseSchema>>("/jobs?group_by=job_function");
+            console.log(data);
+
             setJobs(data);
         } catch (err) {
             console.log(err);
         }
     }
 
-    function renderJobItems(jobs: JobModel[]) {
-        const innerJobs = [...jobs];
-        return jobs.map(outerJob => (
-            <div key={outerJob.jobFunctionId}>
-                <h4>{outerJob.jobFunction?.name}</h4>
-                {jobs.filter(innerJob => outerJob.jobFunctionId == innerJob.jobFunctionId)
-                    .map(({ id, title, location }) => {
-                        return (
-                            <div className="row text-muted pt-3" key={id}>
-                                <div className="col-11">
-                                    <Link to={`/jobs/${id}`} className="d-flex text-decoration-none text-muted">
-                                        <h5 className="text-gray-dark mb-0">{title}</h5>
-                                    </Link>
-                                </div>
-                                <div className="col-1 text-end">
-                                    {location}
-                                    {
-                                        user && (
-                                            <Link to={`/jobs/${id}/applications`}>View Applications</Link>
-                                        )
-                                    }
-                                </div>
-                            </div>
-                        )
-                    })}
-            </div>
-        ));
+    function renderJobItems(jobs: ListJobsCategorizedByJobFunctionResponseSchema) {
+        let elements = [];
+        for (const [key, value] of Object.entries(jobs)) {
+            const element = (
+                <li key={key} className="list-group-item py-3 px-0">
+                    <div className="ms-2 me-auto">
+                        <div className="fw-bold">{key}</div>
+                        {
+                            value.map(({ id, title, location }) => {
+                                return (
+                                    <div className="row text-muted fs-6 pt-3" key={id}>
+                                        <div className="col-6 ps-4">
+                                            <Link to={`/jobs/${id}`} className="d-flex text-decoration-none">
+                                                <span className="text-gray-dark mb-0">{title}</span>
+                                            </Link>
+                                        </div>
+                                        <div className="col-6 text-end">
+                                            {location}
+                                            {
+                                                user && (
+                                                    <Link to={`/jobs/${id}/applications`}>View Applications</Link>
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
+                </li>
+            );
+
+            elements.push(element);
+        }
+
+        return elements;
     }
 
     return (
         <ContentContainer>
-            <h4 className="border-bottom pb-2 mb-0 text-center">Jobs Openings</h4>
-            {jobs.length
-                ? <div style={{ minHeight: "300px" }}>{renderJobItems(jobs)}</div>
-                : (
+            <h4 className="border-bottom border-2 pb-2 mb-0 text-center">Jobs Openings</h4>
+            {jobs
+                ? (<div style={{ minHeight: "300px" }}>
+                    <ul className="list-group list-group-flush">
+                        {renderJobItems(jobs)}
+                    </ul>
+                </div>
+                ) : (
                     <div className="d-flex justify-content-center align-items-center" style={{ height: "250px" }}>
                         <p className="text-muted">No job openings at the moment</p>
                     </div>
-                )}
-        </ContentContainer>
+                )
+            }
+        </ContentContainer >
     );
 }

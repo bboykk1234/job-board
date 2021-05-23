@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ValidatedRequest } from "express-joi-validation";
 import { difference, uniq } from "lodash";
-import { JobsCategorizedByJobFunction } from "../../../@types";
+import { JobsCategorizedByJobFunction, ListJobsCategorizedByJobFunctionResponseSchema } from "../../../@types";
 import { EmploymentType } from "../../database/models/EmploymentType";
 import { Job } from "../../database/models/Job";
 import { JobApplication } from "../../database/models/JobApplication";
@@ -30,15 +30,39 @@ export const getApplications = async (req: Request, res: Response) => {
 }
 
 export const list = async (req: Request, res: Response) => {
+    const { group_by: groupBy } = req.query;
     const jobs = await Job.find({
         select: [
+            "id",
             "title",
             "creatorId",
             "location",
             "jobFunctionId",
+            "employmentTypeId",
+            "levelId",
         ],
         relations: ["jobFunction", "creator"],
     });
+
+
+    if (groupBy == "job_function") {
+        let categorizedJobs: ListJobsCategorizedByJobFunctionResponseSchema = {};
+        jobs.forEach(job => {
+            if (!job.jobFunction) {
+                return;
+            }
+
+            if (job.jobFunction.name in categorizedJobs) {
+                categorizedJobs[job.jobFunction.name].push({ ...job });
+                return;
+            }
+
+            categorizedJobs[job.jobFunction.name] = [{ ...job }];
+        });
+
+        res.json(categorizedJobs);
+        return;
+    }
 
     res.json(jobs);
 };

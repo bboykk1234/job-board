@@ -8,6 +8,10 @@ export interface User {
     updatedAt: string
 }
 
+export interface UserModel extends ModelBase {
+    username: string,
+}
+
 export interface UserProfile extends User {};
 
 export interface Job {
@@ -21,9 +25,10 @@ export interface Job {
     descEditorContent?: RawDraftContentState
 }
 
-export interface JobModel {
-    id: number,
-    creator?: User,
+export interface ListJobResponseSchema extends Omit<JobModel, "description" | "minYearsWorkExp" | "level" | "employmentType"> {}
+
+export interface JobModel extends ModelBase {
+    creator?: UserModel,
     creatorId: number,
     title: string,
     description: string,
@@ -35,8 +40,6 @@ export interface JobModel {
     employmentType?: EmploymentType
     level?: Level
     jobFunction?: JobFunction
-    createdAt: Date,
-    updatedAt: Date,
 }
 
 export interface JobApplication {
@@ -82,8 +85,8 @@ export interface JobFunctionModel extends ModelBase, JobFunction {}
 
 export interface Skill extends EmploymentType { };
 
-export type JobsCategorizedByJobFunction = {
-    [key: string]: JobModel[],
+export type ListJobsCategorizedByJobFunctionResponseSchema = {
+    [key: string]: ListJobResponseSchema[],
 }
 
 export interface LoginFormFieldValues {

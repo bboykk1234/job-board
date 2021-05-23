@@ -68,7 +68,7 @@ export default function JobApplicationList() {
 
     return (
         <ContentContainer>
-            <h4 className="border-bottom pb-2 mb-0 text-center">Applications</h4>
+            <h4 className="border-bottom border-2 pb-2 mb-0 text-center">Applications</h4>
             {jobApplications.length
                 ? renderJobApplicationItems(jobApplications)
                 : (
