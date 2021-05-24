@@ -11,6 +11,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN mkdir -p /usr/src/app
+RUN chown node:node -R /usr/src/app
 
 WORKDIR /usr/src/app
 
