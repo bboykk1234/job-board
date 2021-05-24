@@ -34,19 +34,14 @@ export default function JobList() {
                         {
                             value.map(({ id, title, location }) => {
                                 return (
-                                    <div className="row text-muted fs-6 pt-3" key={id}>
+                                    <div className="row text-muted fs-6 pt-3 mr-0" key={id}>
                                         <div className="col-6 ps-4">
                                             <Link to={`/jobs/${id}`} className="d-flex text-decoration-none">
-                                                <span className="text-gray-dark mb-0">{title}</span>
+                                                <span>{title}</span>
                                             </Link>
                                         </div>
-                                        <div className="col-6 text-end">
+                                        <div className="col-6 text-end pe-4">
                                             {location}
-                                            {
-                                                user && (
-                                                    <Link to={`/jobs/${id}/applications`}>View Applications</Link>
-                                                )
-                                            }
                                         </div>
                                     </div>
                                 );

@@ -36,7 +36,7 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
                 render={({ field: { value, onChange }, fieldState: { error } }) => {
                     return (
                         <>
-                            <label className="form-label" htmlFor="levels">Levels</label>
+                            <label className="form-label" htmlFor="levels">Levels<span className="text-danger">*</span></label>
                             <Select
                                 id="levels"
                                 isSearchable

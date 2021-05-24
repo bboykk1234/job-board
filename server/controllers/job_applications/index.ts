@@ -5,6 +5,8 @@ import { PostJobApplicationRequestSchema } from "../../requests/job_applications
 import { Job } from "../../database/models/Job";
 import FileType from "file-type";
 import fs from "fs";
+import { JobSkill } from "../../database/models/JobSkill";
+import { Skill } from "../../database/models/Skill";
 
 export const get = async (req: Request, res: Response) => {
     const jobApplication = await JobApplication.findOne(req.params.id);
@@ -20,10 +22,13 @@ export const get = async (req: Request, res: Response) => {
 };
 
 export const list = async (req: Request, res: Response) => {
-    const page = (req.query.page || 1) as number;
-    const take = 10;
-    const skip = take * (page - 1);
-    const jobApplications = await JobApplication.find({ skip, take });
+    const jobApplications = await JobApplication.find({
+        relations: [
+            "job",
+            "job.jobSkillPivot",
+            "job.jobSkillPivot.skill"
+        ]
+     });
 
     res.json(jobApplications);
 };

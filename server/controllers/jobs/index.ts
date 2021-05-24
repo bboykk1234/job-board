@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ValidatedRequest } from "express-joi-validation";
 import { difference, uniq } from "lodash";
-import { JobsCategorizedByJobFunction, ListJobsCategorizedByJobFunctionResponseSchema } from "../../../@types";
+import { ListJobsCategorizedByJobFunctionResponseSchema } from "../../../@types";
 import { EmploymentType } from "../../database/models/EmploymentType";
 import { Job } from "../../database/models/Job";
 import { JobApplication } from "../../database/models/JobApplication";
@@ -9,10 +9,18 @@ import { JobFunction } from "../../database/models/JobFunction";
 import { JobSkill } from "../../database/models/JobSkill";
 import { Level } from "../../database/models/Level";
 import { Skill } from "../../database/models/Skill";
+import { User } from "../../database/models/User";
 import { SaveJobRequestSchema } from "../../requests/jobs";
 
 export const get = async (req: Request, res: Response) => {
-    const job = await Job.findOne(req.params.id);
+    const job = await Job.createQueryBuilder()
+        .innerJoinAndSelect(`${Job.name}.creator`, User.name)
+        .innerJoinAndSelect(`${Job.name}.jobFunction`, JobFunction.name)
+        .innerJoinAndSelect(`${Job.name}.employmentType`, EmploymentType.name)
+        .innerJoinAndSelect(`${Job.name}.level`, Level.name)
+        .addSelect(`${Job.name}.description`)
+        .where({id: req.params.id})
+        .getOne();
 
     if (!job) {
         res.status(404).json({

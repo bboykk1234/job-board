@@ -31,15 +31,17 @@ export class Job extends Base {
     title!: string;
 
     @Column({
-        type: "text"
+        type: "text",
+        // select: false
     })
     description!: string;
 
     @Column({
-        type: "text"
+        type: "text",
+        select: false
     })
     @Index({
-        fulltext: true
+        fulltext: true,
     })
     keywords!: string;
 
@@ -74,15 +76,15 @@ export class Job extends Base {
     jobFunctionId!: number;
 
     @ManyToOne(() => EmploymentType)
-    @JoinColumn({ name: "employment_type_id" })
+    @JoinColumn({ name: "employment_type_id", referencedColumnName: "id" })
     employmentType?: EmploymentType;
 
     @ManyToOne(() => Level)
-    @JoinColumn({ name: "level_id" })
+    @JoinColumn({ name: "level_id", referencedColumnName: "id" })
     level?: Level;
 
     @ManyToOne(() => JobFunction)
-    @JoinColumn({ name: "job_function_id" })
+    @JoinColumn({ name: "job_function_id", referencedColumnName: "id" })
     jobFunction?: JobFunction;
 
     @OneToMany(() => JobSkill, jobSkill => jobSkill.job)

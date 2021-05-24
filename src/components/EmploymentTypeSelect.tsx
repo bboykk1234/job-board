@@ -36,7 +36,7 @@ const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, set
                 render={({ field: { value, onChange }, fieldState: { error } }) => {
                     return (
                         <>
-                            <label className="form-label" htmlFor="employment_types">Employment Type</label>
+                            <label className="form-label" htmlFor="employment_types">Employment Type<span className="text-danger">*</span></label>
                             <Select
                                 id="employment_types"
                                 isSearchable

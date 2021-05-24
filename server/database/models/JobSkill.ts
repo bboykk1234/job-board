@@ -19,11 +19,11 @@ export class JobSkill extends Base {
     skillId!: number;
 
     @ManyToOne(() => Job, job => job.jobSkillPivot)
-    @JoinColumn({ name: "job_id" })
+    @JoinColumn({ name: "job_id", referencedColumnName: "id" })
     job?: Job;
 
     @ManyToOne(() => Skill, skill => skill.jobSkillPivot)
-    @JoinColumn({ name: "skill_id" })
+    @JoinColumn({ name: "skill_id", referencedColumnName: "id" })
     skill?: Skill;
 
 }

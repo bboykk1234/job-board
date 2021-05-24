@@ -36,7 +36,7 @@ const JobFunctionSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ c
                         render={({ field: { onChange }, fieldState: { error } }) => {
                             return (
                                 <>
-                                    <label className="form-label" htmlFor="job-functions">Job Function</label>
+                                    <label className="form-label" htmlFor="job-functions">Job Function<span className="text-danger">*</span></label>
                                     <Select
                                         id="job-functions"
                                         isSearchable

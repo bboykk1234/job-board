@@ -8,7 +8,7 @@ import { Job } from "./Job";
 export class JobApplication extends Base {
 
     @ManyToOne(() => Job)
-    @JoinColumn({ name: "job_id" })
+    @JoinColumn({ name: "job_id", referencedColumnName: "id" })
     job?: Job;
 
     @Column({

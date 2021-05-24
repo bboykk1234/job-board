@@ -3,7 +3,7 @@ import Container from "./Container";
 
 const ContentContainer: React.FC = ({ children }) => {
     return (
-        <Container widthInPixel={800}>
+        <Container widthInPixel={1140}>
             {children}
         </Container>
     );
