@@ -67,12 +67,7 @@ export default function JobDetail() {
                         <Link className="btn btn-primary w-100" to={`/jobs/${jobId}/apply`}>Apply for This Job</Link>
                         {
                             isLoggedIn && (
-                                <Link className="btn btn-primary w-100 mt-4" to={{
-                                    pathname: `/jobs/${jobId}/applications`,
-                                    state: {
-                                        fromJobDetail: true,
-                                    }
-                                }}>View Applications</Link>
+                                <Link className="btn btn-primary w-100 mt-4" to={`/jobs/${jobId}/applications`}>View Applications</Link>
                             )
                         }
                         <div className="mt-5">
