@@ -55,7 +55,7 @@ export default function JobForm() {
     }
 
     function loadSkillList(input: string) {
-        return axios.get<Skill[]>("skills", { params: { start: input } })
+        return axios.get<Skill[]>("skills", { params: { search: input } })
             .then(data => data.data);
     }
 
@@ -128,6 +128,8 @@ export default function JobForm() {
                                         id="skills-select"
                                         isMulti
                                         hideSelectedOptions
+                                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                        menuPortalTarget={document.body}
                                         placeholder="Type to search for skill(s)..."
                                         value={value}
                                         getOptionLabel={e => e.name}

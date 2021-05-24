@@ -37,25 +37,8 @@ passport.use(
     "jwt",
     new JwtStrategy(
         {
-            secretOrKey: 'TOP_SECRET',
+            secretOrKey: process.env.JWT_SECRET as string,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        },
-        async (token, done) => {
-            try {
-                return done(null, token.user);
-            } catch (error) {
-                done(error);
-            }
-        }
-    )
-);
-
-passport.use(
-    "jwt-query",
-    new JwtStrategy(
-        {
-            secretOrKey: 'TOP_SECRET',
-            jwtFromRequest: ExtractJwt.fromUrlQueryParameter("token"),
         },
         async (token, done) => {
             try {

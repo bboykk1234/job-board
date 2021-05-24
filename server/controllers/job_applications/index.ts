@@ -37,7 +37,7 @@ export const list = async (req: Request, res: Response) => {
     }
 
     if (search) {
-        whereConditions.values.push(` MATCH(${JobApplication.name}.keywords) AGAINST (:search IN BOOLEAN MODE)`);
+        whereConditions.values.push(`MATCH(${JobApplication.name}.keywords) AGAINST (:search IN BOOLEAN MODE)`);
         whereConditions.params.search = `*${search}*`;
     }
 

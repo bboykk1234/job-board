@@ -1,12 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import { JobApplicationModelWithSkills } from "../../@types";
 import 'dotenv/config';
 import ContentContainer from "./ContentContainer";
 
 export default function JobApplicationList() {
-    const { id: jobId, search } = useParams<{ id: string | undefined, search: string | undefined }>()
+    const { id: jobId, search } = useParams<{ id: string | undefined, search: string | undefined }>();
+    const history = useHistory();
     const [jobApplications, setJobApplications] = useState<JobApplicationModelWithSkills[]>([]);
     const [searchInput, setSearchInput] = useState<string>("");
     const { state } = useLocation<{ fromJobDetail: boolean } | undefined>();
@@ -14,8 +15,6 @@ export default function JobApplicationList() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        console.log(jobId, searchInput);
-
         async function loadJobApplications(jobId: string | undefined, search: string | undefined = "") {
             setIsLoading(true);
             let params: { search: string | undefined, jobId: string | undefined } | {} = search ? { search } : {};
@@ -51,7 +50,12 @@ export default function JobApplicationList() {
 
     function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
         const newSearchInput = e.currentTarget.value;
-        setSearchInput(newSearchInput)
+        setSearchInput(newSearchInput);
+        history.push({
+            pathname: `/jobs/${jobId}/applications`,
+            search: '?search=' + newSearchInput
+        })
+
     }
 
     function renderJobApplicationItems(jobApplications: JobApplicationModelWithSkills[]) {

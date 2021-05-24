@@ -46,6 +46,8 @@ const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, set
                                 id="employment_types"
                                 isSearchable
                                 value={value}
+                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                menuPortalTarget={document.body}
                                 getOptionLabel={e => e.name}
                                 getOptionValue={e => e.id.toString()}
                                 options={employmentTypes}

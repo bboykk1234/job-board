@@ -1,5 +1,4 @@
 import express from "express";
-import { isString } from "lodash";
 import { Skill } from "../../database/models/Skill";
 
 const skillRouter = express.Router();
@@ -7,13 +6,12 @@ const skillRouter = express.Router();
 skillRouter.get(
     "/",
     async (req, res) => {
-        const { start = "" } = req.query;
-        const table = Skill.getRepository().metadata.tableName;
-        const query = Skill.getRepository()
-            .createQueryBuilder();
+        const { search = "" } = req.query;
+        const query = Skill.createQueryBuilder();
 
-        if (isString(start) &&  start.trim()) {
-            query.where("name LIKE :start", { start: `${start}%` });
+        if (search) {
+            // TODO: Improvement
+            query.where(`${Skill.name}.name LIKE :search`, { search: `%${search}%`});
         } else {
             query.orderBy({ name: "ASC" });
         }

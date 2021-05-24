@@ -25,7 +25,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
                     };
                     delete body.password;
 
-                    const token = jwt.sign({ user: body, exp: Math.floor(Date.now() / 1000) + (60 * 60) }, 'TOP_SECRET');
+                    const token = jwt.sign({ user: body, exp: Math.floor(Date.now() / 1000) + (60 * 60) }, process.env.JWT_SECRET as string);
 
                     return res.json({ token });
                 }

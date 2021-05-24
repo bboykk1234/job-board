@@ -58,7 +58,7 @@ export default function JobDetail() {
                         </div>
                         <Editor
                             readOnly
-                            editorClassName="fs-7"
+                            editorClassName="fs-6"
                             toolbarHidden
                             initialContentState={editorContent}
                         />

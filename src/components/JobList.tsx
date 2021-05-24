@@ -7,12 +7,14 @@ import ContentContainer from "./ContentContainer";
 
 export default function JobList() {
     const [jobs, setJobs] = useState<ListJobsCategorizedByJobFunctionResponseSchema>({});
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         loadJobs();
     }, []);
 
     async function loadJobs(page = 1) {
+        setIsLoading(true);
         try {
             const { data } = await axios.get<any, AxiosResponse<ListJobsCategorizedByJobFunctionResponseSchema>>("/jobs?group_by=job_function");
 
@@ -20,6 +22,7 @@ export default function JobList() {
         } catch (err) {
             console.log(err);
         }
+        setIsLoading(false);
     }
 
     function renderJobItems(jobs: ListJobsCategorizedByJobFunctionResponseSchema) {
@@ -58,12 +61,20 @@ export default function JobList() {
     return (
         <ContentContainer>
             <h4 className="border-bottom border-2 pb-2 mb-0 text-center">Jobs Openings</h4>
-            {!isEmpty(jobs)
-                ? (<div>
-                    <ul className="list-group list-group-flush">
-                        {renderJobItems(jobs)}
-                    </ul>
-                </div>
+            {isLoading
+                ? (
+                    <div className="text-center my-5">
+                        <div className="spinner-border" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                ) : !isEmpty(jobs) ? (
+                    <div>
+                        <ul className="list-group list-group-flush">
+                            {renderJobItems(jobs)}
+                        </ul>
+                    </div>
+
                 ) : (
                     <div className="d-flex justify-content-center align-items-center" style={{ height: "250px" }}>
                         <p className="text-muted">No job openings at the moment</p>

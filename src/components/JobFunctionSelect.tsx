@@ -45,6 +45,8 @@ const JobFunctionSelect: React.FC<{ control: Control<JobFormFieldValues> }> = ({
                             <Select
                                 id="job-functions"
                                 isSearchable
+                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                menuPortalTarget={document.body}
                                 getOptionLabel={e => e.name}
                                 getOptionValue={e => e.id.toString()}
                                 options={jobFunctions}

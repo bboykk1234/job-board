@@ -46,6 +46,8 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
                                 id="levels"
                                 isSearchable
                                 value={value}
+                                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                                menuPortalTarget={document.body}
                                 getOptionLabel={e => e.name}
                                 getOptionValue={e => e.id.toString()}
                                 options={levels}

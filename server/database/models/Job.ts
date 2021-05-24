@@ -1,14 +1,12 @@
 import { ValidatedRequest } from "express-joi-validation";
-import { Entity, Column, JoinColumn, ManyToOne, OneToMany, Index } from "typeorm";
+import { Entity, Column, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { SaveJobRequestSchema } from "../../requests/jobs";
 import { Base } from "./Base";
 import { EmploymentType } from "./EmploymentType";
 import { JobSkill } from "./JobSkill";
 import { User } from "./User";
 import { RawDraftContentState } from "draft-js";
-import keywordExtractor from "keyword-extractor";
 import { Skill } from "./Skill";
-import { uniq } from "lodash";
 import { Level } from "./Level";
 import { JobFunction } from "./JobFunction";
 
