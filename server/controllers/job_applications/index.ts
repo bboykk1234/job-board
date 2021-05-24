@@ -23,7 +23,7 @@ export const get = async (req: Request, res: Response) => {
 };
 
 export const list = async (req: Request, res: Response) => {
-    const { jobId, search } = req.query;
+    const { jobId, search }: { jobId?: string, search?: string } = req.query;
     const query = JobApplication.createQueryBuilder()
         .innerJoinAndSelect(`${JobApplication.name}.job`, Job.name);
     let whereConditions: { params: { jobId?: string, search?: string }, values: string[] } = {
@@ -38,7 +38,7 @@ export const list = async (req: Request, res: Response) => {
 
     if (search) {
         whereConditions.values.push(`MATCH(${JobApplication.name}.keywords) AGAINST (:search IN BOOLEAN MODE)`);
-        whereConditions.params.search = `*${search}*`;
+        whereConditions.params.search = `*${search.replace(/[+\-><\(\)~*\"@]+/, " ")}*`;
     }
 
     if (whereConditions.values.length) {

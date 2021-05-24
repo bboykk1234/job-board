@@ -4,12 +4,15 @@ import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import { JobApplicationModelWithSkills } from "../../@types";
 import 'dotenv/config';
 import ContentContainer from "./ContentContainer";
+import querystring from "querystring";
 
 export default function JobApplicationList() {
-    const { id: jobId, search } = useParams<{ id: string | undefined, search: string | undefined }>();
+    const { id: jobId } = useParams<{ id: string | undefined }>();
+    const { search: urlQueryString } = useLocation();
+    const queryParams = querystring.parse(urlQueryString.replace("?", ""));
     const history = useHistory();
     const [jobApplications, setJobApplications] = useState<JobApplicationModelWithSkills[]>([]);
-    const [searchInput, setSearchInput] = useState<string>("");
+    const [searchInput, setSearchInput] = useState<string>(queryParams.search as string || "");
     const { state } = useLocation<{ fromJobDetail: boolean } | undefined>();
     const { fromJobDetail = false } = state || {};
     const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +55,7 @@ export default function JobApplicationList() {
         const newSearchInput = e.currentTarget.value;
         setSearchInput(newSearchInput);
         history.push({
-            pathname: `/jobs/${jobId}/applications`,
+            pathname: jobId ? `/jobs/${jobId}/applications` : `/applications`,
             search: '?search=' + newSearchInput
         })
 
@@ -168,7 +171,7 @@ export default function JobApplicationList() {
             </h4>
 
             <div className="input-group my-3 w-50">
-                <input onChange={handleSearchChange} type="text" name="searchInput" id="searchInput" className="form-control" placeholder="Type to search..." />
+                <input onChange={handleSearchChange} type="text" name="searchInput" id="searchInput" className="form-control" value={searchInput} placeholder="Type to search..." />
                 <button className="btn btn-outline-secondary" type="button" id="searchBtn">Search</button>
             </div>
             {
