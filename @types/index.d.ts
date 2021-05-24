@@ -20,18 +20,18 @@ export interface Job {
     title: string,
     description: string,
     location: string,
-    minYearsWorkExp: number,
     employmentTypeId: number,
     descEditorContent?: RawDraftContentState
 }
 
-export interface ListJobResponseSchema extends Omit<JobModel, "description" | "minYearsWorkExp" | "level" | "employmentType"> { }
+export interface ListJobResponseSchema extends Omit<JobModel, "description" | "level" | "employmentType"> { }
 
 export interface GetJobResponseSchema extends Omit<JobModel, "createdAt" | "updatedAt" | "employmentType" | "level" | "jobFunction"> {
     createdAt: string,
     updatedAt: string
     employmentType: EmploymentType
-    level: Level
+    level: Level,
+    skills: Skill[],
     jobFunction: JobFunction
 }
 
@@ -45,7 +45,6 @@ export interface JobModel extends ModelBase {
     title: string,
     description: string,
     location: string,
-    minYearsWorkExp?: number | null,
     employmentTypeId: number,
     levelId: number,
     jobFunctionId: number,
@@ -61,7 +60,7 @@ export interface JobSkillModelWithSkill extends ModelBase {
 }
 
 export interface JobModelWithSkill extends JobModel {
-    jobSkillPivot: JobSkillModelWithSkill[]
+    skills: Skill[]
 }
 
 export interface JobApplicationModelWithSkills extends JobApplicationModel {
@@ -145,7 +144,6 @@ export type JobFormFieldValues = {
     employmentType: EmploymentType | null,
     level: Level | null,
     jobFunction: JobFunction,
-    minYearsWorkExp?: number,
     description: RawDraftContentState,
     skills: Skill[]
 }

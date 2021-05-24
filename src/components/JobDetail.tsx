@@ -40,16 +40,17 @@ export default function JobDetail() {
             level,
             jobFunction,
             createdAt,
-            updatedAt
+            updatedAt,
+            skills,
         } = job;
 
         return (
             <ContentContainer>
-                <Link className="text-decoration-none d-inline-flex align-items-center ms-4" to="/jobs"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+                <Link className="text-decoration-none d-inline-flex align-items-center" to="/jobs"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
                 </svg><span className="ps-1">Job Openings</span></Link>
                 <div className="row mx-0">
-                    <div className="col-8 px-4">
+                    <div className="col-8 ps-2 pe-4">
 
                         <div className="py-2 border-bottom">
                             <h3>{title}</h3>
@@ -62,11 +63,16 @@ export default function JobDetail() {
                             initialContentState={editorContent}
                         />
                     </div>
-                    <div className="col-4 px-4">
+                    <div className="col-4 pe-2 ps-4">
                         <Link className="btn btn-primary w-100" to={`/jobs/${jobId}/apply`}>Apply for This Job</Link>
                         {
                             isLoggedIn && (
-                                <Link className="btn btn-primary w-100 mt-4" to={`/jobs/${jobId}/applications`}>View Applications</Link>
+                                <Link className="btn btn-primary w-100 mt-4" to={{
+                                    pathname: `/jobs/${jobId}/applications`,
+                                    state: {
+                                        fromJobDetail: true,
+                                    }
+                                }}>View Applications</Link>
                             )
                         }
                         <div className="mt-5">
@@ -100,6 +106,10 @@ export default function JobDetail() {
                                     </>
                                 )
                             }
+                            <div className="mb-3">
+                                <div className="text-muted fs-6">Skill Needed</div>
+                                <div className="fs-6">{skills.map(skill => skill.name).join(", ")}</div>
+                            </div>
                         </div>
                     </div>
                 </div>

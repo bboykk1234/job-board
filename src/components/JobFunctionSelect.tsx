@@ -22,7 +22,11 @@ const JobFunctionSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ c
     }, []);
 
     return isLoading
-        ? <div>Loading...</div>
+        ? <div className="text-center my-5">
+        <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+        </div>
+    </div>
         : (
             <Controller
                         control={control}
@@ -36,7 +40,7 @@ const JobFunctionSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ c
                         render={({ field: { onChange }, fieldState: { error } }) => {
                             return (
                                 <>
-                                    <label className="form-label" htmlFor="job-functions">Job Function<span className="text-danger">*</span></label>
+                                    <label className="form-label d-inline-flex align-items-center" htmlFor="job-functions">Job Function<span className="text-danger">*</span></label>
                                     <Select
                                         id="job-functions"
                                         isSearchable
@@ -46,7 +50,6 @@ const JobFunctionSelect: React.FC<{control: Control<JobFormFieldValues>}> = ({ c
                                         placeholder="Type to filter"
                                         onChange={onChange}
                                     />
-                                    {error && <div>{error.message}</div>}
                                 </>
                             );
                         }}

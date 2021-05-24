@@ -9,7 +9,13 @@ export default function App() {
 
     return isLoggedIn === null
         ? (
-            <Layout>Loading...</Layout>
+            <Layout>
+                <div className="text-center my-5">
+                    <div className="spinner-border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </Layout>
         ) : (
             <Layout>
                 <Router>

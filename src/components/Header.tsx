@@ -1,13 +1,14 @@
 import React, { useContext } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useHistory } from "react-router-dom";
 import { ReactComponent as Logo } from "../assets/images/logo.svg";
 import { UserContext } from "../contexts/User";
 
 const Header: React.FC = () => {
     const { isLoggedIn, user, logout } = useContext(UserContext);
+    const history = useHistory();
     return (
         <div className="container-fluid">
-            <header className="d-flex justify-content-center py-3 mb-4 border-bottom">
+            <header className="d-flex justify-content-center py-3 border-bottom">
                 <Link to="/" className="d-flex align-items-center me-auto text-dark text-decoration-none">
                     <Logo style={{ height: "75px" }} />
                 </Link>
@@ -37,7 +38,10 @@ const Header: React.FC = () => {
                             <a href="#" className="nav-link dropdown-toggle text-capitalize" id="navbarUserDropdown" data-bs-toggle="dropdown" role="button" aria-expanded="false">{user.username}</a>
                             <ul className="dropdown-menu" aria-labelledby="navbarUserDropdown">
                                 <li>
-                                    <button className="dropdown-item" onClick={logout}>Logout</button>
+                                    <button className="dropdown-item" onClick={() => {
+                                        logout();
+                                        history.push("/");
+                                    }}>Logout</button>
                                 </li>
                             </ul>
                         </li>

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ValidatedRequest } from "express-joi-validation";
 import { difference, uniq } from "lodash";
+import { createQueryBuilder } from "typeorm";
 import { ListJobsCategorizedByJobFunctionResponseSchema } from "../../../@types";
 import { EmploymentType } from "../../database/models/EmploymentType";
 import { Job } from "../../database/models/Job";
@@ -29,11 +30,41 @@ export const get = async (req: Request, res: Response) => {
         return;
     }
 
+    job.jobSkillPivot = await createQueryBuilder()
+        .relation(Job, "jobSkillPivot")
+        .of(job)
+        .loadMany();
+
+    const skillIds = job.jobSkillPivot.map(jobSkill => jobSkill.skillId);
+    const skills = await Skill.findByIds(skillIds);
+    job.skills = skills;
+
+    delete job.jobSkillPivot;
+
     res.json(job);
 };
 
 export const getApplications = async (req: Request, res: Response) => {
-    const jobApplications = await JobApplication.find({ jobId: parseInt(req.params.id) });
+    const jobApplications = await JobApplication.find({
+        where: {
+            jobId: parseInt(req.params.id)
+        },
+        relations: [
+            "job",
+            "job.jobSkillPivot"
+        ]
+    });
+
+    for (const jobApplication of jobApplications) {
+        if (!jobApplication.job) {
+            continue;
+        }
+        const skillIds = jobApplication.job.jobSkillPivot?.map(jobSkill => jobSkill.skillId) || [];
+        const skills = await Skill.findByIds(skillIds);
+        jobApplication.job.skills = skills;
+        delete jobApplication.job.jobSkillPivot;
+    }
+
     res.json(jobApplications);
 }
 

@@ -51,13 +51,6 @@ export class Job extends Base {
     location!: string;
 
     @Column({
-        type: "tinyint",
-        name: "min_years_work_exp",
-        nullable: true
-    })
-    minYearsWorkExp!: number | null;
-
-    @Column({
         name: "employment_type_id",
         unsigned: true,
     })
@@ -90,14 +83,15 @@ export class Job extends Base {
     @OneToMany(() => JobSkill, jobSkill => jobSkill.job)
     jobSkillPivot?: JobSkill[];
 
+    skills?: Skill[];
+
     static populateViaPostReq(req: ValidatedRequest<SaveJobRequestSchema>): Job {
-        const { title, location, description, minYearsWorkExp, employmentTypeId, levelId, jobFunctionId } = req.body;
+        const { title, location, description, employmentTypeId, levelId, jobFunctionId } = req.body;
 
         const job = new Job();
         job.title = title;
         job.location = location;
         job.description = description;
-        job.minYearsWorkExp = minYearsWorkExp;
         job.keywords = "";
         job.employmentTypeId = employmentTypeId;
         job.levelId = levelId
@@ -108,7 +102,7 @@ export class Job extends Base {
     }
 
     populateViaPutReq(req: ValidatedRequest<SaveJobRequestSchema>): Job {
-        const { title, location, employmentTypeId, description, minYearsWorkExp, levelId, jobFunctionId } = req.body;
+        const { title, location, employmentTypeId, description, levelId, jobFunctionId } = req.body;
 
         if (this.employmentTypeId != employmentTypeId) {
             this.employmentTypeId = employmentTypeId;
@@ -125,7 +119,6 @@ export class Job extends Base {
         this.title = title;
         this.location = location;
         this.description = JSON.stringify(description);
-        this.minYearsWorkExp = minYearsWorkExp;
 
         return this;
     }

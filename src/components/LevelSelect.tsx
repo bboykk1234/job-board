@@ -22,7 +22,11 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
     }, []);
 
     return isLoading
-        ? <div>Loading...</div>
+        ? <div className="text-center my-5">
+            <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        </div>
         : (
             <Controller
                 control={control}
@@ -36,7 +40,7 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
                 render={({ field: { value, onChange }, fieldState: { error } }) => {
                     return (
                         <>
-                            <label className="form-label" htmlFor="levels">Levels<span className="text-danger">*</span></label>
+                            <label className="form-label d-inline-flex align-items-center" htmlFor="levels">Levels<span className="text-danger">*</span></label>
                             <Select
                                 id="levels"
                                 isSearchable
@@ -49,7 +53,7 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
                                     const typeValue = getValues("employmentType");
                                     const { name } = value as Level;
                                     onChange(value)
-                                    if (name == "Internship") {
+                                    if (name === "Internship") {
                                         setValue("employmentType", {
                                             id: 1,
                                             name: "Internship",
@@ -57,12 +61,11 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
                                         return;
                                     }
 
-                                    if (typeValue?.name == "Internship") {
+                                    if (typeValue?.name === "Internship") {
                                         setValue("employmentType", null);
                                     }
                                 }}
                             />
-                            {error && <div>{error.message}</div>}
                         </>
                     );
                 }}

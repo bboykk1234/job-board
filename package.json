@@ -2,7 +2,9 @@
     "name": "job-board",
     "version": "0.1.0",
     "private": true,
+    "proxy": "http://localhost:5000",
     "dependencies": {
+        "@hookform/error-message": "^2.0.0",
         "@popperjs/core": "^2.9.2",
         "@testing-library/dom": "^7.31.0",
         "@testing-library/jest-dom": "^5.11.4",
@@ -27,6 +29,7 @@
         "bcrypt": "^5.0.1",
         "body-parser": "^1.19.0",
         "bootstrap": "^5.0.1",
+        "concurrently": "^6.1.0",
         "cors": "^2.8.5",
         "draft-js": "^0.11.7",
         "express-joi-validation": "^5.0.0",
@@ -62,6 +65,7 @@
         "web-vitals": "^1.0.1"
     },
     "scripts": {
+        "start:dev": "concurrently \"yarn start:app\" \"yarn start:server:dev\"",
         "start:server:dev": "ts-node-dev --respawn --transpile-only ./server",
         "start:server": "ts-node ./server",
         "start:app": "react-scripts start",

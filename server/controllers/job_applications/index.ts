@@ -7,6 +7,7 @@ import FileType from "file-type";
 import fs from "fs";
 import { JobSkill } from "../../database/models/JobSkill";
 import { Skill } from "../../database/models/Skill";
+import path from "path";
 
 export const get = async (req: Request, res: Response) => {
     const jobApplication = await JobApplication.findOne(req.params.id);
@@ -25,10 +26,19 @@ export const list = async (req: Request, res: Response) => {
     const jobApplications = await JobApplication.find({
         relations: [
             "job",
-            "job.jobSkillPivot",
-            "job.jobSkillPivot.skill"
+            "job.jobSkillPivot"
         ]
-     });
+    });
+
+    for (const jobApplication of jobApplications) {
+        if (!jobApplication.job) {
+            continue;
+        }
+        const skillIds = jobApplication.job.jobSkillPivot?.map(jobSkill => jobSkill.skillId) || [];
+        const skills = await Skill.findByIds(skillIds);
+        jobApplication.job.skills = skills;
+        delete jobApplication.job.jobSkillPivot;
+    }
 
     res.json(jobApplications);
 };
@@ -78,11 +88,8 @@ export const download = async (req: Request, res: Response) => {
         return;
     }
 
-    // res.setHeader('Content-disposition', `attachment; filename=${jobApplication.getName()}.pdf`);
-    // res.setHeader('Content-type', 'application/pdf');
     res.contentType('application/pdf')
-        .download(
-            `storage/resumes/${jobApplication.id}.pdf`,
-            `${jobApplication.getName()}.pdf`,
+        .sendFile(
+            path.join(__dirname, "../../../", `storage/resumes/${jobApplication.id}.pdf`),
         );
 };

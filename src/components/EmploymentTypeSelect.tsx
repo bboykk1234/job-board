@@ -22,7 +22,11 @@ const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, set
     }, []);
 
     return isLoading
-        ? <div>Loading...</div>
+        ? <div className="text-center my-5">
+        <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+        </div>
+    </div>
         : (
             <Controller
                 control={control}
@@ -30,13 +34,13 @@ const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, set
                 rules={{
                     required: {
                         value: true,
-                        message: "Please select an employment type",
+                        message: "Field cannot be empty",
                     },
                 }}
                 render={({ field: { value, onChange }, fieldState: { error } }) => {
                     return (
                         <>
-                            <label className="form-label" htmlFor="employment_types">Employment Type<span className="text-danger">*</span></label>
+                            <label className="form-label d-inline-flex align-items-center" htmlFor="employment_types">Employment Type<span className="text-danger">*</span></label>
                             <Select
                                 id="employment_types"
                                 isSearchable
@@ -49,7 +53,7 @@ const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, set
                                     const levelValue = getValues("level");
                                     const { name } = value as EmploymentType;
                                     onChange(value)
-                                    if (name == "Internship") {
+                                    if (name === "Internship") {
                                         setValue("level", {
                                             id: 1,
                                             name: "Internship",
@@ -57,12 +61,11 @@ const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, set
                                         return;
                                     }
 
-                                    if (levelValue?.name == "Internship") {
+                                    if (levelValue?.name === "Internship") {
                                         setValue("level", null);
                                     }
                                 }}
                             />
-                            {error && <div>{error.message}</div>}
                         </>
                     );
                 }}

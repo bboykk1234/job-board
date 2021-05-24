@@ -15,7 +15,7 @@ import skillRouter from "./routes/skills";
 import jobFunctionRouter from "./routes/job_functions";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.API_PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,10 +34,6 @@ app.use("/api/employment_types", employmentTypeRouter);
 app.use("/api/job_functions", jobFunctionRouter);
 app.use("/api/job_applications", jobApplicationRouter);
 app.use("/api/skills", skillRouter);
-
-app.get('/*', function (req, res) {
-    res.sendFile(path.join(__dirname, '../build', 'index.html'));
-});
 
 // NOTE: Custom error handler always last
 // https://expressjs.com/en/guide/error-handling.html

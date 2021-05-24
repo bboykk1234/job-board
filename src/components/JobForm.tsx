@@ -6,20 +6,22 @@ import AsyncSelect from 'react-select/async';
 import axios from "axios";
 import EmploymentTypeSelect from "./EmploymentTypeSelect";
 import { useHistory } from "react-router";
-import { useEffect } from "react";
 import FormContainer from "./FormContainer";
 import LevelSelect from "./LevelSelect";
 import JobFunctionSelect from "./JobFunctionSelect";
+import { useEffect, useState } from "react";
+import FormFieldErrorMessage from "./FormFieldErrorMessage";
+import { ErrorMessage } from "@hookform/error-message";
 
 export default function JobForm() {
     const history = useHistory();
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm<JobFormFieldValues>({
-        defaultValues: {
-            description: { blocks: [], entityMap: {} }
-        }
+        mode: "onBlur",
     });
 
     async function onSubmit(values: JobFormFieldValues) {
+        setIsSubmitting(true);
         try {
             // By pass type error, it should not be empty form validated
             if (!(values.employmentType && values.level && values.jobFunction)) {
@@ -29,18 +31,16 @@ export default function JobForm() {
             const {
                 employmentType: { id: employmentTypeId },
                 level: { id: levelId },
-                jobFunction: {id: jobFunctionId},
+                jobFunction: { id: jobFunctionId },
                 title,
                 location,
                 skills,
-                minYearsWorkExp,
                 description,
             } = values;
 
             await axios.post("/jobs", {
                 title,
                 location,
-                minYearsWorkExp,
                 levelId,
                 employmentTypeId,
                 jobFunctionId,
@@ -51,6 +51,7 @@ export default function JobForm() {
         } catch (err) {
             console.log(err);
         }
+        setIsSubmitting(false);
     }
 
     function loadSkillList(input: string) {
@@ -68,28 +69,45 @@ export default function JobForm() {
             <h4 className="mb-3 text-center">New Job Opening</h4>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
-                    <label htmlFor="title" className="form-label">Title<span className="text-danger">*</span></label>
-                    <input type="text" className="form-control" id="title" {...register("title", { required: true, maxLength: 255 })} />
+                    <label htmlFor="title" className="form-label d-inline-flex align-items-center">Title<span className="text-danger">*</span></label>
+                    <input type="text" className="form-control" id="title" {...register("title", {
+                        required: {
+                            value: true,
+                            message: "Field cannot be empty"
+                        }, maxLength: {
+                            value: 255,
+                            message: "Title is too long"
+                        }
+                    })} />
+                    <ErrorMessage errors={errors} name="title" as={FormFieldErrorMessage} />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="location" className="form-label">Location<span className="text-danger">*</span></label>
-                    <input type="text" className="form-control" id="location" {...register("location", { required: true, maxLength: 255 })} />
+                    <label htmlFor="location" className="form-label d-inline-flex align-items-center">Location<span className="text-danger">*</span></label>
+                    <input type="text" className="form-control" id="location" {...register("location", {
+                        required: {
+                            value: true,
+                            message: "Field cannot be empty"
+                        }, maxLength: {
+                            value: 255,
+                            message: "Value is too long"
+                        }
+                    })} />
+                    <ErrorMessage errors={errors} name="location" as={FormFieldErrorMessage} />
                 </div>
                 <div className="mb-3 row">
                     <div className="col-6">
                         <EmploymentTypeSelect control={control} setValue={setValue} getValues={getValues} />
+                        <ErrorMessage errors={errors} name="employmentType" as={FormFieldErrorMessage} />
                     </div>
                     <div className="col-6">
                         <LevelSelect control={control} setValue={setValue} getValues={getValues} />
+                        <ErrorMessage errors={errors} name="level" as={FormFieldErrorMessage} />
                     </div>
                 </div>
                 <div className="mb-3 row">
-                    <div className="col-6">
+                    <div className="col-12">
                         <JobFunctionSelect control={control} />
-                    </div>
-                    <div className="col-6">
-                        <label className="form-label" htmlFor="min-years-work-exp">Work Experience<span className="text-danger">*</span></label>
-                        <input type="number" className="form-control" id="min-years-work-exp" {...register("minYearsWorkExp", { required: true, valueAsNumber: true })} />
+                        <ErrorMessage errors={errors} name="jobFunction" as={FormFieldErrorMessage} />
                     </div>
                 </div>
                 <div className="mb-3">
@@ -99,13 +117,13 @@ export default function JobForm() {
                         rules={{
                             required: {
                                 value: true,
-                                message: "Please select the skills",
+                                message: "Field cannot be empty",
                             },
                         }}
                         render={({ field: { value, onChange }, fieldState: { error } }) => {
                             return (
                                 <>
-                                    <label className="form-label" htmlFor="skills-select">Skills<span className="text-danger">*</span></label>
+                                    <label className="form-label d-inline-flex align-items-center" htmlFor="skills-select">Skills<span className="text-danger">*</span></label>
                                     <AsyncSelect
                                         id="skills-select"
                                         isMulti
@@ -118,11 +136,11 @@ export default function JobForm() {
                                         loadOptions={loadSkillList}
                                         onChange={onChange}
                                     />
-                                    {error && <div>{error.message}</div>}
                                 </>
                             );
                         }}
                     />
+                    <ErrorMessage errors={errors} name="skills" as={FormFieldErrorMessage} />
                 </div>
 
                 <div className="mb-3">
@@ -130,14 +148,19 @@ export default function JobForm() {
                         control={control}
                         name="description"
                         rules={{
-                            required: true, validate: {
-                                hasText: value => convertFromRaw(value).hasText() || "Please fill up the Description",
+                            validate: {
+                                hasText: value => {
+                                    if (!value || !convertFromRaw(value).hasText()) {
+                                        return "Field cannot be empty";
+                                    }
+                                    return true
+                                },
                             }
                         }}
                         render={({ field: { value, onChange }, fieldState: { error }, formState }) => {
                             return (
                                 <>
-                                    <label className="form-label" htmlFor="rdw-wrapper-666">Job Description<span className="text-danger">*</span></label>
+                                    <label className="form-label d-inline-flex align-items-center" htmlFor="rdw-wrapper-666">Job Description<span className="text-danger">*</span></label>
                                     <Editor
                                         wrapperId={666}
                                         wrapperClassName="editor-wrapper"
@@ -155,13 +178,16 @@ export default function JobForm() {
                                             },
                                         }}
                                     />
-                                    {error && <div>{error.message}</div>}
                                 </>
                             );
                         }}
                     />
+                    <ErrorMessage errors={errors} name="description" as={FormFieldErrorMessage} />
                 </div>
-                <button className="w-100 btn btn-lg btn-primary" type="submit">Create</button>
+                <button className="w-100 btn btn-lg btn-primary" type="submit">
+                    {isSubmitting && <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>}
+                    Create
+                </button>
             </form>
         </FormContainer>
     );

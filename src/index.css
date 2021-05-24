@@ -34,3 +34,7 @@ code {
     overflow-y: scroll;
     padding: 0 10px;
 }
+
+.fs-7 {
+    font-size: 0.75rem !important;
+}

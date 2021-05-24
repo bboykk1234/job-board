@@ -1,13 +1,12 @@
 import axios, { AxiosResponse } from "axios";
-import { useContext, useEffect, useState } from "react";
+import { isEmpty } from "lodash";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ListJobsCategorizedByJobFunctionResponseSchema } from "../../@types";
-import { UserContext } from "../contexts/User";
 import ContentContainer from "./ContentContainer";
 
 export default function JobList() {
     const [jobs, setJobs] = useState<ListJobsCategorizedByJobFunctionResponseSchema>({});
-    const { user } = useContext(UserContext);
 
     useEffect(() => {
         loadJobs();
@@ -16,7 +15,6 @@ export default function JobList() {
     async function loadJobs(page = 1) {
         try {
             const { data } = await axios.get<any, AxiosResponse<ListJobsCategorizedByJobFunctionResponseSchema>>("/jobs?group_by=job_function");
-            console.log(data);
 
             setJobs(data);
         } catch (err) {
@@ -60,8 +58,8 @@ export default function JobList() {
     return (
         <ContentContainer>
             <h4 className="border-bottom border-2 pb-2 mb-0 text-center">Jobs Openings</h4>
-            {jobs
-                ? (<div style={{ minHeight: "300px" }}>
+            {!isEmpty(jobs)
+                ? (<div>
                     <ul className="list-group list-group-flush">
                         {renderJobItems(jobs)}
                     </ul>

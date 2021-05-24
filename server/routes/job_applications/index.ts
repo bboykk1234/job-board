@@ -9,7 +9,6 @@ const jobApplicationRouter = express.Router();
 const validator = createValidator({ passError: true });
 const upload = multer({ dest: "storage/uploads" });
 
-
 jobApplicationRouter.get(
     "/:id",
     passport.authenticate("jwt", { session: false }),
@@ -30,8 +29,8 @@ jobApplicationRouter.post(
 );
 
 jobApplicationRouter.get(
-    "/:id/download",
-    passport.authenticate("jwt-query", { session: false }),
+    "/:id/resume",
+    passport.authenticate("jwt", { session: false }),
     download
 );
 
