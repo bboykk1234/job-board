@@ -139,7 +139,6 @@ export const create = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
     }
 
     const job = Job.populateViaPostReq(req);
-    job.generateKeywords(employmentType, skills);
     await job.save();
 
     for (const skill of skills) {

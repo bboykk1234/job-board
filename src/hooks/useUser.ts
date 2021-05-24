@@ -39,12 +39,13 @@ export const useUser = () => {
             expires.setHours(expires.getHours() + 1);
             if (res.data.token) {
                 setCookie('tk', res.data.token, { expires, path: "/" });
-                return;
+                return true;
             }
         } catch (err) {
             console.log(err);
             removeCookie('tk');
         }
+        return false;
     }
 
     function logout() {

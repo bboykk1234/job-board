@@ -1,5 +1,5 @@
 import { ValidatedRequest } from "express-joi-validation";
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, Index } from "typeorm";
 import { PostJobApplicationRequestSchema } from "../../requests/job_applications";
 import { Base } from "./Base";
 import { Job } from "./Job";
@@ -65,6 +65,15 @@ export class JobApplication extends Base {
         length: 50,
     })
     country!: string;
+
+    @Column({
+        type: "text",
+        select: false
+    })
+    @Index({
+        fulltext: true,
+    })
+    keywords!: string;
 
     static populateViaPostReq(req: ValidatedRequest<PostJobApplicationRequestSchema>): JobApplication {
         const jobApplication = new JobApplication();

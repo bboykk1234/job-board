@@ -127,7 +127,7 @@ export interface LoginFormFieldValues {
     password: string,
 }
 
-export type LoginFn = ({ username, password }: LoginFormFieldValues) => Promise<void>;
+export type LoginFn = ({ username, password }: LoginFormFieldValues) => Promise<boolean>;
 
 export type NoArgsVoidFn = () => void;
 

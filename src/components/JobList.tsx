@@ -34,7 +34,7 @@ export default function JobList() {
                                 return (
                                     <div className="row text-muted fs-6 pt-3 mr-0" key={id}>
                                         <div className="col-6 ps-4">
-                                            <Link to={`/jobs/${id}`} className="d-flex text-decoration-none">
+                                            <Link to={`/jobs/${id}`} className="text-decoration-none">
                                                 <span>{title}</span>
                                             </Link>
                                         </div>

@@ -16,16 +16,16 @@ export default function JobDetail() {
     useEffect(() => {
         async function loadJob(jobId: number) {
             try {
-                let { data } = await axios.get<any, AxiosResponse<GetJobResponseSchema>>(`/jobs/${jobId}`);
+                const { data } = await axios.get<any, AxiosResponse<GetJobResponseSchema>>(`/jobs/${jobId}`);
                 const descEditorContent = JSON.parse(data.description) as RawDraftContentState;
                 setJob({
                     ...data,
                     descEditorContent
                 });
-                setIsLoading(false);
             } catch (err) {
                 console.log(err);
             }
+            setIsLoading(false);
         }
 
         loadJob(parseInt(jobId));
@@ -118,8 +118,21 @@ export default function JobDetail() {
     }
 
     if (!job && !isLoading) {
-        return <div>Job not found</div>;
+        return <ContentContainer>
+            <Link className="text-decoration-none d-inline-flex align-items-center" to="/jobs"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fillRule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+            </svg><span className="ps-1">Job Openings</span></Link>
+            <div className="d-flex justify-content-center align-items-center" style={{ height: "250px" }}>
+                <p className="text-muted">Job not found...</p>
+            </div>
+        </ContentContainer>;
     }
 
-    return <ContentContainer><div>Loading...</div></ContentContainer>;
+    return <ContentContainer>
+        <div className="text-center my-5">
+            <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </ContentContainer>;
 }

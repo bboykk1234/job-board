@@ -32,18 +32,8 @@ export class Job extends Base {
 
     @Column({
         type: "text",
-        // select: false
     })
     description!: string;
-
-    @Column({
-        type: "text",
-        select: false
-    })
-    @Index({
-        fulltext: true,
-    })
-    keywords!: string;
 
     @Column({
         length: 255
@@ -92,7 +82,6 @@ export class Job extends Base {
         job.title = title;
         job.location = location;
         job.description = description;
-        job.keywords = "";
         job.employmentTypeId = employmentTypeId;
         job.levelId = levelId
         job.jobFunctionId = jobFunctionId;
@@ -129,39 +118,9 @@ export class Job extends Base {
         }
 
         const { blocks = [] } = JSON.parse(this.description) as RawDraftContentState;
-        const nonEmptyBlockTexts = blocks.map(block => block?.text?.trim() || "")
+        const nonEmptyBlockTexts = blocks.map(block => block?.text?.trim().toLowerCase() || "")
             .filter(text => text != "");
 
         return nonEmptyBlockTexts.join(" ");
-    }
-
-    generateKeywords(employmentType: EmploymentType, skills: Skill[]) : void {
-        const skillNames = skills.map(skill => skill.name.trim().toLowerCase())
-            .join(" ");
-        const typeName = employmentType.name.trim().toLocaleLowerCase();
-
-        let keywords: string[] = [];
-
-        keywords.push(this.title.trim().toLocaleLowerCase());
-        keywords.push(this.location.trim().toLocaleLowerCase());
-
-        if (typeName) {
-            keywords.push(typeName);
-        }
-
-        if (skillNames) {
-            keywords.push(skillNames);
-        }
-
-        keywords = [
-            ...keywords,
-            ...keywordExtractor.extract(this.getDescriptionPlainText(), {
-                language: "english",
-                remove_digits: true,
-                return_changed_case: true,
-            })
-        ];
-
-        this.keywords = uniq(keywords).join(" ");
     }
 }

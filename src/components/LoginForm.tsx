@@ -10,15 +10,22 @@ export default function LoginForm() {
     const { login } = useContext(UserContext);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormFieldValues>();
+    const [isInvalid, setIsInvalid] = useState(false);
 
     const onSubmit = async (values: LoginFormFieldValues) => {
         setIsSubmitting(true);
-        await login(values);
+        const isLoggedIn = await login(values);
+        setIsInvalid(!isLoggedIn);
         setIsSubmitting(false);
     }
 
     return (
         <FormContainer>
+            {isInvalid && (
+                <div className="alert alert-danger" role="alert">
+                    Invalid username or password
+                </div>
+            )}
             <form onSubmit={handleSubmit(onSubmit)}>
                 <h4 className="mb-3 text-center">Please log in</h4>
                 <div className="mb-3">

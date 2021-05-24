@@ -5,9 +5,9 @@ import { PostJobApplicationRequestSchema } from "../../requests/job_applications
 import { Job } from "../../database/models/Job";
 import FileType from "file-type";
 import fs from "fs";
-import { JobSkill } from "../../database/models/JobSkill";
-import { Skill } from "../../database/models/Skill";
 import path from "path";
+import { extractSearchKeywordsForJobApplication } from "../../services/search_keywords";
+import { Skill } from "../../database/models/Skill";
 
 export const get = async (req: Request, res: Response) => {
     const jobApplication = await JobApplication.findOne(req.params.id);
@@ -23,18 +23,41 @@ export const get = async (req: Request, res: Response) => {
 };
 
 export const list = async (req: Request, res: Response) => {
-    const jobApplications = await JobApplication.find({
-        relations: [
-            "job",
-            "job.jobSkillPivot"
-        ]
-    });
+    const { jobId, search } = req.query;
+    const query = JobApplication.createQueryBuilder()
+        .innerJoinAndSelect(`${JobApplication.name}.job`, Job.name);
+    let whereConditions: { params: { jobId?: string, search?: string }, values: string[] } = {
+        params: {},
+        values: [],
+    };
 
+    if (jobId) {
+        whereConditions.values.push(`${Job.name}.id = :jobId`);
+        whereConditions.params.jobId = jobId as string;
+    }
+
+    if (search) {
+        whereConditions.values.push(` MATCH(${JobApplication.name}.keywords) AGAINST (:search IN BOOLEAN MODE)`);
+        whereConditions.params.search = `*${search}*`;
+    }
+
+    if (whereConditions.values.length) {
+        query.where(whereConditions.values.join(" AND "), whereConditions.params);
+    }
+
+    const jobApplications = await query.getMany();
+
+    // TODO: Optimize
     for (const jobApplication of jobApplications) {
         if (!jobApplication.job) {
             continue;
         }
-        const skillIds = jobApplication.job.jobSkillPivot?.map(jobSkill => jobSkill.skillId) || [];
+        const job = jobApplication.job;
+        job.jobSkillPivot = await Job.createQueryBuilder()
+            .relation("jobSkillPivot")
+            .of(job)
+            .loadMany();
+        const skillIds = job.jobSkillPivot?.map(jobSkill => jobSkill.skillId) || [];
         const skills = await Skill.findByIds(skillIds);
         jobApplication.job.skills = skills;
         delete jobApplication.job.jobSkillPivot;
@@ -73,6 +96,7 @@ export const create = async (req: ValidatedRequest<PostJobApplicationRequestSche
     }
 
     const jobApplication = JobApplication.populateViaPostReq(req);
+    jobApplication.keywords = await extractSearchKeywordsForJobApplication(jobApplication);
     await jobApplication.save();
     fs.renameSync(file.path, `storage/resumes/${jobApplication.id}.pdf`);
 

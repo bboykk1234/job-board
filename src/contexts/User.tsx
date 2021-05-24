@@ -5,7 +5,7 @@ import { useUser } from "../hooks/useUser";
 export const UserContext = React.createContext<UserContextType>({
     user: null,
     isLoggedIn: null,
-    login: async ({username, password}) => {},
+    login: async ({username, password}) => false,
     logout: () => {},
 });
 

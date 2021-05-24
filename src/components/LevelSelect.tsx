@@ -22,12 +22,13 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
     }, []);
 
     return isLoading
-        ? <div className="text-center my-5">
-            <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
+        ? (
+            <div className="text-center my-5">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
             </div>
-        </div>
-        : (
+        ) : (
             <Controller
                 control={control}
                 name="level"
