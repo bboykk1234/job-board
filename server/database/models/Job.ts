@@ -56,6 +56,13 @@ export class Job extends Base {
     })
     jobFunctionId!: number;
 
+    @Column({
+        name: "closed_at",
+        type: "timestamp",
+        nullable: true
+    })
+    closedAt!: Date;
+
     @ManyToOne(() => EmploymentType)
     @JoinColumn({ name: "employment_type_id", referencedColumnName: "id" })
     employmentType?: EmploymentType;
@@ -104,8 +111,9 @@ export class Job extends Base {
         }
 
         this.title = title;
+        console.log(this.title);
         this.location = location;
-        this.description = JSON.stringify(description);
+        this.description = description;
 
         return this;
     }

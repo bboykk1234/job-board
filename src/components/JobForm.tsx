@@ -1,24 +1,56 @@
-import { convertFromRaw } from "draft-js";
+import { convertFromRaw, RawDraftContentState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
-import { JobFormFieldValues, Skill } from "../../@types";
+import { JobFormFieldValues, Skill, GetJobResponseSchema } from "../../@types";
 import { useForm, Controller } from "react-hook-form";
 import AsyncSelect from 'react-select/async';
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import EmploymentTypeSelect from "./EmploymentTypeSelect";
 import { useHistory } from "react-router";
+import { useParams } from "react-router-dom";
 import FormContainer from "./FormContainer";
 import LevelSelect from "./LevelSelect";
 import JobFunctionSelect from "./JobFunctionSelect";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormFieldErrorMessage from "./FormFieldErrorMessage";
 import { ErrorMessage } from "@hookform/error-message";
 
 export default function JobForm() {
+    const { id: jobId } = useParams<{ id: string | undefined }>();
     const history = useHistory();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { register, handleSubmit, control, formState: { errors }, setValue, getValues } = useForm<JobFormFieldValues>({
+    const [isLoading, setIsLoading] = useState(true);
+    const { register, handleSubmit, control, formState: { errors }, setValue, getValues, reset } = useForm<JobFormFieldValues>({
         mode: "onBlur",
     });
+
+    useEffect(() => {
+        if (!jobId) {
+            return;
+        }
+
+        async function getJobDetail(jobId: string) {
+            setIsLoading(true);
+            try {
+                const { data } = await axios.get<any, AxiosResponse<GetJobResponseSchema>>(`/jobs/${jobId}`);
+                reset({
+                    title: data.title,
+                    location: data.location,
+                    employmentType: data.employmentType,
+                    level: data.level,
+                    jobFunction: data.jobFunction,
+                    description: JSON.parse(data.description) as RawDraftContentState,
+                    skills: data.skills,
+                });
+            } catch (err) {
+                console.log(err);
+                history.push("/");
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        getJobDetail(jobId);
+    }, [jobId]);
 
     async function onSubmit(values: JobFormFieldValues) {
         setIsSubmitting(true);
@@ -38,6 +70,20 @@ export default function JobForm() {
                 description,
             } = values;
 
+            if (jobId) {
+                await axios.put(`/jobs/${jobId}`, {
+                    title,
+                    location,
+                    levelId,
+                    employmentTypeId,
+                    jobFunctionId,
+                    description: JSON.stringify(description),
+                    skillIds: skills.map(skill => skill.id),
+                });
+                history.push("/jobs/created");
+                return;
+            }
+
             await axios.post("/jobs", {
                 title,
                 location,
@@ -50,8 +96,9 @@ export default function JobForm() {
             history.push("/jobs/created");
         } catch (err) {
             console.log(err);
+        } finally {
+            setIsSubmitting(false);
         }
-        setIsSubmitting(false);
     }
 
     function loadSkillList(input: string) {
@@ -61,7 +108,7 @@ export default function JobForm() {
 
     return (
         <FormContainer>
-            <h4 className="mb-3 text-center">New Job Opening</h4>
+            <h4 className="mb-3 text-center">{jobId ? 'Edit' : 'New'} Job Opening</h4>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-3">
                     <label htmlFor="title" className="form-label d-inline-flex align-items-center">Title<span className="text-danger">*</span></label>
@@ -131,7 +178,10 @@ export default function JobForm() {
                                         getOptionValue={e => e.id.toString()}
                                         defaultOptions={[]}
                                         loadOptions={loadSkillList}
-                                        onChange={onChange}
+                                        onChange={e => {
+                                            console.log(e);
+                                            onChange(e);
+                                        }}
                                     />
                                 </>
                             );
@@ -139,51 +189,54 @@ export default function JobForm() {
                     />
                     <ErrorMessage errors={errors} name="skills" as={FormFieldErrorMessage} />
                 </div>
-
-                <div className="mb-3">
-                    <Controller
-                        control={control}
-                        name="description"
-                        rules={{
-                            validate: {
-                                hasText: value => {
-                                    if (!value || !convertFromRaw(value).hasText()) {
-                                        return "Field cannot be empty";
+                {
+                    ((jobId && isLoading) || (!jobId && !isLoading)) ? (<div>Loading...</div>) : (
+                        <div className="mb-3">
+                            <Controller
+                                control={control}
+                                name="description"
+                                rules={{
+                                    validate: {
+                                        hasText: value => {
+                                            if (!value || !convertFromRaw(value).hasText()) {
+                                                return "Field cannot be empty";
+                                            }
+                                            return true
+                                        },
                                     }
-                                    return true
-                                },
-                            }
-                        }}
-                        render={({ field: { value, onChange }, fieldState: { error }, formState }) => {
-                            return (
-                                <>
-                                    <label className="form-label d-inline-flex align-items-center" htmlFor="rdw-wrapper-666">Job Description<span className="text-danger">*</span></label>
-                                    <Editor
-                                        wrapperId={666}
-                                        wrapperClassName="editor-wrapper"
-                                        editorClassName="editor-main"
-                                        toolbarClassName="editor-toolbar"
-                                        initialContentState={value}
-                                        onContentStateChange={onChange}
-                                        toolbar={{
-                                            options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'link'],
-                                            inline: {
-                                                options: ['bold', 'italic', 'underline', 'strikethrough'],
-                                            },
-                                            blockType: {
-                                                options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6']
-                                            },
-                                        }}
-                                    />
-                                </>
-                            );
-                        }}
-                    />
-                    <ErrorMessage errors={errors} name="description" as={FormFieldErrorMessage} />
-                </div>
+                                }}
+                                render={({ field: { value, onChange }, fieldState: { error }, formState }) => {
+                                    return (
+                                        <>
+                                            <label className="form-label d-inline-flex align-items-center" htmlFor="rdw-wrapper-666">Job Description<span className="text-danger">*</span></label>
+                                            <Editor
+                                                wrapperId={666}
+                                                wrapperClassName="editor-wrapper"
+                                                editorClassName="editor-main"
+                                                toolbarClassName="editor-toolbar"
+                                                initialContentState={value}
+                                                onContentStateChange={onChange}
+                                                toolbar={{
+                                                    options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'link'],
+                                                    inline: {
+                                                        options: ['bold', 'italic', 'underline', 'strikethrough'],
+                                                    },
+                                                    blockType: {
+                                                        options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6']
+                                                    },
+                                                }}
+                                            />
+                                        </>
+                                    );
+                                }}
+                            />
+                            <ErrorMessage errors={errors} name="description" as={FormFieldErrorMessage} />
+                        </div>
+                    )
+                }
                 <button className="w-100 btn btn-lg btn-primary" type="submit">
                     {isSubmitting && <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>}
-                    Create
+                    {jobId ? 'Update' : 'Create'}
                 </button>
             </form>
         </FormContainer>

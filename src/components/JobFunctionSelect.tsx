@@ -38,7 +38,7 @@ const JobFunctionSelect: React.FC<{ control: Control<JobFormFieldValues> }> = ({
                         message: "Please select a job function",
                     },
                 }}
-                render={({ field: { onChange }, fieldState: { error } }) => {
+                render={({ field: { value, onChange }, fieldState: { error } }) => {
                     return (
                         <>
                             <label className="form-label d-inline-flex align-items-center" htmlFor="job-functions">Job Function<span className="text-danger">*</span></label>
@@ -49,6 +49,7 @@ const JobFunctionSelect: React.FC<{ control: Control<JobFormFieldValues> }> = ({
                                 menuPortalTarget={document.body}
                                 getOptionLabel={e => e.name}
                                 getOptionValue={e => e.id.toString()}
+                                value={value}
                                 options={jobFunctions}
                                 placeholder="Type to filter"
                                 onChange={onChange}

@@ -18,7 +18,8 @@ export abstract class Base extends BaseEntity {
     @Column({
         name: "updated_at",
         type: "timestamp",
-        nullable: true
+        nullable: true,
+        default: null,
     })
     updatedAt!: Date;
 

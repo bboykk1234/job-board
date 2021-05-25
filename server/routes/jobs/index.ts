@@ -2,7 +2,7 @@ import express from "express";
 import { createValidator } from "express-joi-validation";
 import passport from "passport";
 import { saveJobBodySchema } from "../../requests/jobs";
-import { create, get, list, update, getApplications } from "../../controllers/jobs";
+import { create, get, list, update, getApplications, close } from "../../controllers/jobs";
 
 const jobRouter = express.Router();
 const validator = createValidator({ passError: true });
@@ -25,6 +25,12 @@ jobRouter.put(
     passport.authenticate("jwt", { session: false }),
     validator.body(saveJobBodySchema),
     update
+);
+
+jobRouter.post(
+    "/:id/close",
+    passport.authenticate("jwt", { session: false }),
+    close
 );
 
 export default jobRouter;

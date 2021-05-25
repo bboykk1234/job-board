@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ValidatedRequest } from "express-joi-validation";
-import { difference, uniq } from "lodash";
-import { createQueryBuilder } from "typeorm";
+import { difference, intersection, uniq } from "lodash";
+import { createQueryBuilder, IsNull } from "typeorm";
 import { ListJobsCategorizedByJobFunctionResponseSchema } from "../../../@types";
 import { EmploymentType } from "../../database/models/EmploymentType";
 import { Job } from "../../database/models/Job";
@@ -20,7 +20,7 @@ export const get = async (req: Request, res: Response) => {
         .innerJoinAndSelect(`${Job.name}.employmentType`, EmploymentType.name)
         .innerJoinAndSelect(`${Job.name}.level`, Level.name)
         .addSelect(`${Job.name}.description`)
-        .where({id: req.params.id})
+        .where({ id: req.params.id, closedAt: IsNull() })
         .getOne();
 
     if (!job) {
@@ -81,6 +81,9 @@ export const list = async (req: Request, res: Response) => {
             "levelId",
         ],
         relations: ["jobFunction", "creator"],
+        where: {
+            closedAt: IsNull(),
+        }
     });
 
 
@@ -155,7 +158,12 @@ export const create = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
 };
 
 export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: Response) => {
-    const job = await Job.findOne(req.params.id);
+    const job = await Job.findOne(req.params.id, {
+        relations: ["jobSkillPivot"],
+        where: {
+            closedAt: IsNull(),
+        }
+    });
 
     if (!job) {
         res.status(404).json({
@@ -164,7 +172,7 @@ export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
         return;
     }
 
-    const { employmentTypeId, skillIds, levelId } = req.body;
+    const { employmentTypeId, skillIds, levelId, jobFunctionId } = req.body;
     const uniqSkillIds = uniq(skillIds);
     const employmentType = await EmploymentType.findOne(employmentTypeId);
 
@@ -186,14 +194,26 @@ export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
         return;
     }
 
+    const jobFunction = await JobFunction.findOne(jobFunctionId);
+
+    if (!jobFunction) {
+        res.status(400).json({
+            type: "body",
+            message: "Invalid job function selected.",
+        });
+        return;
+    }
+
     job.populateViaPutReq(req);
+    await job.save();
 
     const oldSkillIds = job.jobSkillPivot?.map(jobSkill => jobSkill.skillId) || [];
     const newSkillIds = difference(uniqSkillIds, oldSkillIds);
+    const existingSkillIds = intersection(oldSkillIds, uniqSkillIds);
     const skillIdsShouldDelete = difference(oldSkillIds, uniqSkillIds);
     const newSkills = await Skill.findByIds(newSkillIds);
 
-    if (newSkills.length === 0) {
+    if (existingSkillIds.length === 0 && newSkills.length === 0) {
         res.status(400).json({
             type: "body",
             message: "No skills selected.",
@@ -208,10 +228,21 @@ export const update = async (req: ValidatedRequest<SaveJobRequestSchema>, res: R
         await jobSkill.save();
     }
 
-    skillIdsShouldDelete.length > 0 && await JobSkill.delete(skillIdsShouldDelete);
+    skillIdsShouldDelete.length > 0 && await JobSkill.createQueryBuilder()
+        .delete()
+        .where("job_id = :jobId AND skill_id IN (:skillIds)", { jobId: job.id, skillIds: skillIdsShouldDelete })
+        .execute();
 
     res.json({
         ...job,
         skills: newSkills
     });
 };
+
+export const close = async (req: ValidatedRequest<SaveJobRequestSchema>, res: Response) => {
+    const { affected } = await Job.update(req.params.id, { closedAt: new Date });
+
+    res.json({
+        status: affected && affected >= 0,
+    });
+}

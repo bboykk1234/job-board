@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { RawDraftContentState } from "draft-js";
 import { useContext, useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { Link, useParams } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 import { GetJobResponseSchema, GetJobResponseState } from "../../@types";
 import { UserContext } from "../contexts/User";
 import ContentContainer from "./ContentContainer";
@@ -11,6 +11,7 @@ export default function JobDetail() {
     const { id: jobId } = useParams<{ id: string }>();
     const [job, setJob] = useState<GetJobResponseState>();
     const [isLoading, setIsLoading] = useState(true);
+    const history = useHistory();
     const { isLoggedIn } = useContext(UserContext);
 
     useEffect(() => {
@@ -30,6 +31,17 @@ export default function JobDetail() {
 
         loadJob(parseInt(jobId));
     }, [jobId]);
+
+    async function handleClose() {
+        try {
+            const { data } = await axios.post(`/jobs/${jobId}/close`);
+            if (data.status) {
+                history.push("/jobs");
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     if (job) {
         const {
@@ -67,7 +79,11 @@ export default function JobDetail() {
                         <Link className="btn btn-primary w-100" to={`/jobs/${jobId}/apply`}>Apply for This Job</Link>
                         {
                             isLoggedIn && (
-                                <Link className="btn btn-primary w-100 mt-4" to={`/jobs/${jobId}/applications`}>View Applications</Link>
+                                <>
+                                    <Link className="btn btn-primary w-100 mt-2" to={`/jobs/${jobId}/applications`}>View Applications</Link>
+                                    <Link className="btn btn-primary w-100 mt-2" to={`/jobs/${jobId}/edit`}>Edit</Link>
+                                    <button className="btn btn-danger w-100 mt-2" onClick={handleClose}>Close</button>
+                                </>
                             )
                         }
                         <div className="mt-5">
