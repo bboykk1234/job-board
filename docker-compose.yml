@@ -4,9 +4,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: dev
       args:
         PORT: '${API_PORT:-3000}'
-    image: job-board/node
+    image: job-board/node:dev
     ports:
       - "3000:${PORT:-3000}"
       - "5000:${API_PORT:-5000}"

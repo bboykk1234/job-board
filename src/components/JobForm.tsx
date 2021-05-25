@@ -177,10 +177,7 @@ export default function JobForm() {
                                         getOptionValue={e => e.id.toString()}
                                         defaultOptions={[]}
                                         loadOptions={loadSkillList}
-                                        onChange={e => {
-                                            console.log(e);
-                                            onChange(e);
-                                        }}
+                                        onChange={onChange}
                                     />
                                 </>
                             );
