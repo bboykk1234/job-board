@@ -17,6 +17,15 @@
 5. Run `docker-compose exec app yarn migration:run`
 6. Run `docker-compose exec app yarn seed:run`
 7. Access `http://localhost:3000` then login with the `Test Account` below then you can start manage the jobs in the application
+
+## Troubleshoot tips
+- If wanna stop the application from running in your machine, please run `docker-compose down`, it will stop all the containers
+
+## Delete forever the containers related to this repository
+- Please run both
+    - `docker-compose down --rmi all -v`
+    - `docker-compose -f docker-compose.prod.yml down --rmi all -v`
+
 ## Test Account
 - Username: admin
 - Password: admin
