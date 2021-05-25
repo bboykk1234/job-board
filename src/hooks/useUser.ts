@@ -40,7 +40,7 @@ export const useUser = () => {
             });
 
             const expires = new Date();
-            expires.setHours(expires.getHours() + 1);
+            expires.setDate(expires.getDate() + 7);
             if (res.data.token) {
                 setCookie('tk', res.data.token, { expires, path: "/" });
                 return true;
