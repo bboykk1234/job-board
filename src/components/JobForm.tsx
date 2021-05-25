@@ -9,7 +9,7 @@ import { useHistory } from "react-router";
 import FormContainer from "./FormContainer";
 import LevelSelect from "./LevelSelect";
 import JobFunctionSelect from "./JobFunctionSelect";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FormFieldErrorMessage from "./FormFieldErrorMessage";
 import { ErrorMessage } from "@hookform/error-message";
 
@@ -58,11 +58,6 @@ export default function JobForm() {
         return axios.get<Skill[]>("skills", { params: { search: input } })
             .then(data => data.data);
     }
-
-    useEffect(() => {
-        console.log(errors);
-
-    }, [errors]);
 
     return (
         <FormContainer>

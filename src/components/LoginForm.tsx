@@ -9,7 +9,9 @@ import FormFieldErrorMessage from './FormFieldErrorMessage';
 export default function LoginForm() {
     const { login } = useContext(UserContext);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginFormFieldValues>();
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginFormFieldValues>({
+        mode: "onBlur"
+    });
     const [isInvalid, setIsInvalid] = useState(false);
 
     const onSubmit = async (values: LoginFormFieldValues) => {

@@ -11,7 +11,9 @@ import { ErrorMessage } from "@hookform/error-message";
 export default function JobApplicationForm() {
     const history = useHistory();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { register, handleSubmit, formState: { errors } } = useForm<JobApplicationFormFieldValues>();
+    const { register, handleSubmit, formState: { errors } } = useForm<JobApplicationFormFieldValues>({
+        mode: "onBlur"
+    });
     const { id: jobId } = useParams<{ id: string }>();
 
     async function onSubmit(values: JobApplicationFormFieldValues) {
