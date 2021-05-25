@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useHistory, useLocation, useParams } from "react-router-dom";
 import { JobApplicationModelWithSkills } from "../../@types";
 import 'dotenv/config';
@@ -13,6 +13,7 @@ export default function JobApplicationList() {
     const history = useHistory();
     const [jobApplications, setJobApplications] = useState<JobApplicationModelWithSkills[]>([]);
     const [searchInput, setSearchInput] = useState<string>(queryParams.search as string || "");
+    const searchRef = useRef<HTMLInputElement>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -49,14 +50,19 @@ export default function JobApplicationList() {
         link.click();
     }
 
-    function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const newSearchInput = e.currentTarget.value;
+    function handleSearchChange() {
+        const newSearchInput = searchRef.current?.value || "";
         setSearchInput(newSearchInput);
         history.push({
             pathname: jobId ? `/jobs/${jobId}/applications` : `/applications`,
             search: '?search=' + newSearchInput
         })
+    }
 
+    function onEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.charCode === 13) {
+            handleSearchChange();
+        }
     }
 
     function renderJobApplicationItems(jobApplications: JobApplicationModelWithSkills[]) {
@@ -169,8 +175,8 @@ export default function JobApplicationList() {
             </h4>
 
             <div className="input-group my-3 w-50">
-                <input onChange={handleSearchChange} type="text" name="searchInput" id="searchInput" className="form-control" value={searchInput} placeholder="Type to search..." />
-                <button className="btn btn-outline-secondary" type="button" id="searchBtn">Search</button>
+                <input ref={searchRef} type="text" onKeyPress={onEnter} name="searchInput" id="searchInput" className="form-control" placeholder="Type to search..." />
+                <button className="btn btn-outline-secondary" onClick={handleSearchChange} type="button" id="searchBtn">Search</button>
             </div>
             {
                 isLoading ? (

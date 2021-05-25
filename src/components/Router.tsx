@@ -42,13 +42,13 @@ const Router: React.FC = ({ children }) => {
                     <JobApplicationForm />
                 </Route>
                 <Route exact path="/jobs/:id/applications">
-                    <JobApplicationList />
+                    {!isLoggedIn ?  <Redirect to="/" /> : <JobApplicationList />}
                 </Route>
                 <Route exact path="/jobs">
                     <JobList />
                 </Route>
                 <Route exact path="/applications">
-                    <JobApplicationList />
+                    {!isLoggedIn ?  <Redirect to="/" /> : <JobApplicationList />}
                 </Route>
                 <Route exact path="/resume_not_found">
                     <Error message="Resume not found..." />
