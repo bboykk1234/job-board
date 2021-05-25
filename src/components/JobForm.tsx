@@ -5,8 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import AsyncSelect from 'react-select/async';
 import axios, { AxiosResponse } from "axios";
 import EmploymentTypeSelect from "./EmploymentTypeSelect";
-import { useHistory } from "react-router";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import FormContainer from "./FormContainer";
 import LevelSelect from "./LevelSelect";
 import JobFunctionSelect from "./JobFunctionSelect";
@@ -190,7 +189,13 @@ export default function JobForm() {
                     <ErrorMessage errors={errors} name="skills" as={FormFieldErrorMessage} />
                 </div>
                 {
-                    ((jobId && isLoading) || (!jobId && !isLoading)) ? (<div>Loading...</div>) : (
+                    ((jobId && isLoading) || (!jobId && !isLoading)) ? (
+                        <div className="text-center my-5">
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    ) : (
                         <div className="mb-3">
                             <Controller
                                 control={control}
