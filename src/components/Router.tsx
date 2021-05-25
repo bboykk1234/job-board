@@ -32,6 +32,9 @@ const Router: React.FC = ({ children }) => {
                 <Route exact path="/jobs/created">
                     <Success message="Job has successfully created by you." to="/jobs" />
                 </Route>
+                <Route exact path="/jobs/edited">
+                    <Success message="Job has successfully edited by you." to="/jobs" />
+                </Route>
                 <Route exact path="/jobs/applied">
                     <Success message="You have successfully applied the job." to="/jobs" />
                 </Route>

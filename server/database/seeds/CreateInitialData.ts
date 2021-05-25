@@ -191,7 +191,17 @@ export default class CreateInitialData implements Seeder {
 
         jobSkill = new JobSkill();
         jobSkill.jobId = job.id;
-        skill = await Skill.findOne({where: {name: "Javascript"}}) as Skill;
+        skill = await Skill.findOne({where: {name: "Mandarin / Chinese"}}) as Skill;
+        jobSkill.skillId = skill.id;
+        jobSkill.save();
+        jobSkill = new JobSkill();
+        jobSkill.jobId = job.id;
+        skill = await Skill.findOne({where: {name: "English"}}) as Skill;
+        jobSkill.skillId = skill.id;
+        jobSkill.save();
+        jobSkill = new JobSkill();
+        jobSkill.jobId = job.id;
+        skill = await Skill.findOne({where: {name: "Communication"}}) as Skill;
         jobSkill.skillId = skill.id;
         jobSkill.save();
 

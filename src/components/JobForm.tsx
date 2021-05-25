@@ -80,7 +80,7 @@ export default function JobForm() {
                     description: JSON.stringify(description),
                     skillIds: skills.map(skill => skill.id),
                 });
-                history.push("/jobs/created");
+                history.push("/jobs/edited");
                 return;
             }
 
