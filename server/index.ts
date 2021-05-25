@@ -35,6 +35,10 @@ app.use("/api/job_functions", jobFunctionRouter);
 app.use("/api/job_applications", jobApplicationRouter);
 app.use("/api/skills", skillRouter);
 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+
 // NOTE: Custom error handler always last
 // https://expressjs.com/en/guide/error-handling.html
 app.use(

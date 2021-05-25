@@ -111,7 +111,6 @@ export class Job extends Base {
         }
 
         this.title = title;
-        console.log(this.title);
         this.location = location;
         this.description = description;
 

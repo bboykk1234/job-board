@@ -16,7 +16,7 @@ export default class CreateInitialData implements Seeder {
             .insert()
             .into(User)
             .values([
-                { username: 'test', password: bcrypt.hashSync("123", 10), createdAt: new Date(), updatedAt: new Date() },
+                { username: 'admin', password: bcrypt.hashSync("admin", 10), createdAt: new Date(), updatedAt: new Date() },
             ])
             .execute();
 

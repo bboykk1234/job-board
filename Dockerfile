@@ -1,5 +1,7 @@
 FROM node:14.17-alpine
 
+ARG PORT
+
 RUN deluser --remove-home node \
     && addgroup -S node -g 1000 \
     && adduser -S -G node -u 1000 node
@@ -22,6 +24,6 @@ USER node
 RUN yarn install && \
     yarn build
 
-EXPOSE 8080
+EXPOSE $PORT
 
 CMD ["yarn", "start:server"]
