@@ -23,7 +23,7 @@ export default function JobForm() {
     });
 
     useEffect(() => {
-        if (!jobId) {
+        if (!jobId || !history || !reset) {
             return;
         }
 
@@ -49,7 +49,7 @@ export default function JobForm() {
         }
 
         getJobDetail(jobId);
-    }, [jobId]);
+    }, [jobId, history, reset]);
 
     async function onSubmit(values: JobFormFieldValues) {
         setIsSubmitting(true);

@@ -22,7 +22,7 @@ const Header: React.FC = () => {
                     </li>
                     {isLoggedIn && (
                         <li className="nav-item m-auto dropdown">
-                            <a href="#" className="nav-link dropdown-toggle" id="navbarManageDropdown" data-bs-toggle="dropdown" role="button" aria-expanded="false">Manage</a>
+                            <button className="btn btn-link nav-link dropdown-toggle" id="navbarManageDropdown" data-bs-toggle="dropdown" aria-expanded="false">Manage</button>
                             <ul className="dropdown-menu" aria-labelledby="navbarManageDropdown">
                                 <li>
                                     <NavLink className="dropdown-item" to="/jobs/create">Create New Job</NavLink>
@@ -35,7 +35,7 @@ const Header: React.FC = () => {
                     )}
                     {user ? (
                         <li className="nav-item m-auto dropdown">
-                            <a href="#" className="nav-link dropdown-toggle text-capitalize" id="navbarUserDropdown" data-bs-toggle="dropdown" role="button" aria-expanded="false">{user.username}</a>
+                            <button className="btn btn-link nav-link dropdown-toggle text-capitalize" id="navbarUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">{user.username}</button>
                             <ul className="dropdown-menu" aria-labelledby="navbarUserDropdown">
                                 <li>
                                     <button className="dropdown-item" onClick={() => {

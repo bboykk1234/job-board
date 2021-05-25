@@ -14,19 +14,23 @@ export const useUser = () => {
             return;
         }
 
-        setUserBasedOnToken();
-    }, [cookies.tk]);
-
-    async function setUserBasedOnToken() {
-        try {
-            const res = await axios.get<any, AxiosResponse<UserProfile>>("/auth/users");
-            setUser(res.data);
-            setIsLoggedin(true);
-        } catch (err) {
-            console.log(err);
-            removeCookie("tk");
+        if (!removeCookie) {
+            return;
         }
-    }
+
+        async function setUserBasedOnToken() {
+            try {
+                const res = await axios.get<any, AxiosResponse<UserProfile>>("/auth/users");
+                setUser(res.data);
+                setIsLoggedin(true);
+            } catch (err) {
+                console.log(err);
+                removeCookie("tk");
+            }
+        }
+
+        setUserBasedOnToken();
+    }, [cookies.tk, removeCookie]);
 
     async function login({ username, password }: LoginFormFieldValues) {
         try {
