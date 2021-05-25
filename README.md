@@ -1,3 +1,6 @@
+## Notes
+- The application is to manage job openings and job applicants, it allows anyone to apply
+- The application is a prototype, it does not have a registration portal and it only can be logged in by using the `Test Account` mentioned below to utilize the full feature.
 ## Before getting started
 - Make sure you have the following install
     - Docker
