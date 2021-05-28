@@ -1,24 +1,26 @@
-import { Model, Pojo } from "objection";
+import { Pojo } from "objection";
 import Job from "./Job";
+import Model from "./Model";
 
 export default class User extends Model {
-    id!: number
     username!: string
     password!: string
-    createdAt!: string
-    updatedAt!: string
 
     static tableName = "users";
 
     static get jsonSchema() {
         return {
             type: 'object',
-            required: ['username', 'password'],
+            required: [
+                'username',
+                'password',
+                ...this.baseJsonSchema.required
+            ],
 
             properties: {
-                id: { type: 'integer' },
                 username: { type: 'string', minLength: 30, maxLength: 30 },
                 password: { type: 'string', minLength: 255, maxLength: 255 },
+                ...this.baseJsonSchema.properties,
             }
         };
     }

@@ -1,9 +1,9 @@
-import '../styles/vendor.scss'
-import '../styles/globals.scss'
-import '@popperjs/core';
+import "../styles/vendor.scss"
+import "../styles/globals.scss"
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
-import { NextCookieProvider, useCookie } from 'next-universal-cookie';
+import { NextCookieProvider } from 'next-universal-cookie';
 import { UserProvider } from '../contexts/User'
 import Layout from "../components/Layout";
 import axios from 'axios';

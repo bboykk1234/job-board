@@ -1,8 +1,9 @@
-import { Model } from "objection";
+import { Pojo } from "objection";
+import { CreateJobApplicationRequestSchema, ValidatedRequestWithFiles } from "../@types";
 import Job from "./Job";
+import Model from "./Model";
 
 export default class JobApplication extends Model {
-    id!: number
     jobId!: number
     firstName!: string
     lastName!: string
@@ -14,10 +15,35 @@ export default class JobApplication extends Model {
     postalCode!: string
     country!: string
     keywords!: string
-    createdAt!: string
-    updatedAt!: string
 
     static tableName = "job_applications"
+
+    get name() {
+        return `${this.firstName} ${this.lastName}`
+    }
+
+    $formatJson(json: Pojo) {
+        json = super.$formatJson(json);
+        delete json.keywords;
+        return json;
+    }
+
+    static populateViaPostReq(req: ValidatedRequestWithFiles<CreateJobApplicationRequestSchema>): JobApplication {
+        const jobApplication = new JobApplication();
+
+        jobApplication.firstName = req.body.firstName;
+        jobApplication.lastName = req.body.lastName;
+        jobApplication.jobId = req.body.jobId;
+        jobApplication.email = req.body.email;
+        jobApplication.phoneNumber = req.body.phoneNumber;
+        jobApplication.address = req.body.address;
+        jobApplication.city = req.body.city;
+        jobApplication.province = req.body.province;
+        jobApplication.postalCode = req.body.postalCode;
+        jobApplication.country = req.body.country;
+
+        return jobApplication;
+    }
 
     static get modifiers() {
         return {
@@ -42,10 +68,10 @@ export default class JobApplication extends Model {
                 'postalCode',
                 'country',
                 'keywords',
+                ...this.baseJsonSchema.required
             ],
 
             properties: {
-                id: { type: 'integer' },
                 jobId: { type: 'integer' },
                 firstName: { type: 'string', minLength: 5, maxLength: 255 },
                 lastName: { type: 'string', minLength: 5, maxLength: 255 },
@@ -57,6 +83,7 @@ export default class JobApplication extends Model {
                 postalCode: { type: 'string', minLength: 1, maxLength: 30 },
                 country: { type: 'string', minLength: 1, maxLength: 50 },
                 keywords: { type: 'string' },
+                ...this.baseJsonSchema.properties
             }
         };
     }

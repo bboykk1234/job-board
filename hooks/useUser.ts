@@ -25,7 +25,6 @@ export const useUser = () => {
                 const res = await axios.get<any, AxiosResponse<UserProfile>>("/auth/users");
                 setUser(res.data);
                 setIsLoggedin(true);
-                router.push("/")
             } catch (err) {
                 console.log(err);
                 removeCookie("tk");

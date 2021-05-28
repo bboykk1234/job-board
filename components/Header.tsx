@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import { useRouter } from "next/router";
-import Link from "./Link";
 import { ReactComponent as Logo } from "../public/images/logo.svg";
 import { UserContext } from "../contexts/User";
+import Link from "next/link";
+import { Nav, Dropdown } from "react-bootstrap";
 
 const Header: React.FC = () => {
     const { isLoggedIn, user, logout } = useContext(UserContext);
@@ -10,48 +11,60 @@ const Header: React.FC = () => {
     return (
         <div className="container-fluid">
             <header className="d-flex justify-content-center py-3 border-bottom">
-                <Link href="/" className="d-flex align-items-center me-auto text-dark text-decoration-none">
-                    <Logo style={{ height: "75px" }} />
+                <Link href="/" >
+                    <a className="d-flex align-items-center me-auto text-dark text-decoration-none"><Logo style={{ height: "75px" }} /></a>
                 </Link>
 
-                <ul className="nav nav-pills">
-                    <li className="nav-item m-auto">
-                        <Link href="/" className="nav-link">Home</Link>
-                    </li>
-                    <li className="nav-item m-auto">
-                        <Link href="/jobs" className="nav-link">Job Openings</Link>
-                    </li>
+                <Nav variant="pills">
+                    <Nav.Item className="m-auto">
+                        <Link href="/" passHref>
+                            <Nav.Link>
+                                Home
+                            </Nav.Link>
+                        </Link>
+                    </Nav.Item>
+                    <Nav.Item className="m-auto">
+                        <Link href="/jobs" passHref>
+                            <Nav.Link>
+                                Job Openings
+                            </Nav.Link>
+                        </Link>
+                    </Nav.Item>
                     {isLoggedIn && (
-                        <li className="nav-item m-auto dropdown">
-                            <button className="btn btn-link nav-link dropdown-toggle" id="navbarManageDropdown" data-bs-toggle="dropdown" aria-expanded="false">Manage</button>
-                            <ul className="dropdown-menu" aria-labelledby="navbarManageDropdown">
-                                <li>
-                                    <Link className="dropdown-item" href="/jobs/create">Create New Job</Link>
-                                </li>
-                                <li>
-                                    <Link className="dropdown-item" href="/applications">View Applications</Link>
-                                </li>
-                            </ul>
-                        </li>
+                        <Dropdown as={Nav.Item} className="m-auto">
+                            <Dropdown.Toggle as={Nav.Link}>Manage</Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Link href="/jobs/new" passHref>
+                                    <Dropdown.Item>
+                                        Create New Job
+                                    </Dropdown.Item>
+                                </Link>
+                                <Link href="/applications" passHref>
+                                    <Dropdown.Item>
+                                        View Applications
+                                    </Dropdown.Item>
+                                </Link>
+                            </Dropdown.Menu>
+                        </Dropdown>
                     )}
                     {user ? (
-                        <li className="nav-item m-auto dropdown">
-                            <button className="btn btn-link nav-link dropdown-toggle text-capitalize" id="navbarUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">{user.username}</button>
-                            <ul className="dropdown-menu" aria-labelledby="navbarUserDropdown">
-                                <li>
-                                    <button className="dropdown-item" onClick={() => {
-                                        logout();
-                                        router.push("/");
-                                    }}>Logout</button>
-                                </li>
-                            </ul>
-                        </li>
+                        <Dropdown as={Nav.Item} className="m-auto">
+                            <Dropdown.Toggle as={Nav.Link} className="text-capitalize">{user.username}</Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => {
+                                    logout();
+                                    router.push("/");
+                                }}>
+                                    Logout
+                                </ Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
                     ) : (
                         <li className="nav-item m-auto">
-                            <Link href="/login" className="nav-link">Log In</Link>
+                            <Link href="/login"><a className="nav-link">Log In</a></Link>
                         </li>
                     )}
-                </ul>
+                </Nav>
             </header >
         </div >
     );

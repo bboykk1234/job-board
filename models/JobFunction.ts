@@ -1,22 +1,22 @@
-import { Model } from "objection";
 import Job from "./Job";
+import Model from "./Model";
 
 export default class JobFunction extends Model {
-    id!: number
     name!: string
-    createdAt!: string
-    updatedAt!: string
 
     static tableName = "job_functions";
 
     static get jsonSchema() {
         return {
             type: 'object',
-            required: ['name'],
+            required: [
+                'name',
+                ...this.baseJsonSchema.required
+            ],
 
             properties: {
-                id: { type: 'integer' },
                 name: { type: 'string', minLength: 1, maxLength: 255 },
+                ...this.baseJsonSchema.properties,
             }
         };
     }

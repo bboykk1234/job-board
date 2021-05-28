@@ -1,5 +1,8 @@
 import { RawDraftContentState } from "draft-js";
 import { Control } from "react-hook-form";
+import { ValidableRequestFields } from "next-joi";
+import { NextApiRequest } from "next";
+import { Options, File, Files } from "formidable";
 
 export interface User {
     id: number,
@@ -167,4 +170,66 @@ export type NextApiRequestWithId = {
     params: {
         id: string
     }
+}
+
+export interface NextApiAuthRequest extends NextApiRequest {
+    user: User,
+}
+
+export type ValidatedRequestSchema = Record<ContainerTypes, any>
+
+export interface CreateJobApplicationRequestSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Body]: {
+        firstName: string,
+        lastName: string,
+        email: string,
+        phoneNumber: string,
+        address: string,
+        city: string,
+        province: string,
+        postalCode: string,
+        country: string,
+        jobId: number,
+    }
+}
+
+export enum ContainerTypes {
+    Body = 'body',
+    Query = 'query',
+    Headers = 'headers',
+    Fields = 'fields',
+    Params = 'params'
+  }
+
+export interface ValidatedAuthRequest<T extends ValidatedRequestSchema>
+  extends NextApiAuthRequest {
+  body: T[ContainerTypes.Body]
+  query: T[ContainerTypes.Query]
+  headers: T[ContainerTypes.Headers]
+  params: T[ContainerTypes.Params]
+}
+
+export interface ValidatedRequest<T extends ValidatedRequestSchema> extends Omit<ValidatedAuthRequest, "user"> {}
+
+export interface ValidatedRequestWithFiles<T extends ValidatedRequestSchema> extends Omit<ValidatedRequest, "user">, NextApiRequestWithFiles  {}
+
+export interface NextApiRequestWithFiles extends NextApiRequest {
+    file: File | File[]
+    files: Files
+}
+
+export interface SaveJobRequestSchema extends ValidatedRequestSchema {
+    [ContainerTypes.Body]: {
+        title: string,
+        location: string,
+        employmentTypeId: number,
+        levelId: number,
+        jobFunctionId: number,
+        skillIds: number[],
+        description: string,
+    }
+}
+
+export interface validationOptions extends Options {
+    single: string,
 }

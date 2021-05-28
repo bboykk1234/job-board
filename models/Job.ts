@@ -1,12 +1,14 @@
-import { Model, QueryBuilder } from "objection";
+import { RawDraftContentState } from "draft-js";
+import { SaveJobRequestSchema, ValidatedAuthRequest } from "../@types";
 import EmploymentType from "./EmploymentType";
 import JobFunction from "./JobFunction";
+import JobSkill from "./JobSkill";
 import Level from "./Level";
+import Model from "./Model";
 import Skill from "./Skill";
 import User from "./User";
 
 export default class Job extends Model {
-    id!: number
     creatorId!: number
     title!: string
     description!: string
@@ -15,10 +17,62 @@ export default class Job extends Model {
     levelId!: number
     jobFunctionId!: number
     closedAt!: string
-    createdAt!: string
-    updatedAt!: string
+
+    skills?: Skill[]
+    employmentType?: EmploymentType
+    level?: Level
+    jobFunction?: JobFunction
 
     static tableName = "jobs"
+
+    getDescriptionPlainText(): string {
+        if (!this.description) {
+            return "";
+        }
+
+        const { blocks = [] } = JSON.parse(this.description) as RawDraftContentState;
+        const nonEmptyBlockTexts = blocks.map(block => block?.text?.trim().toLowerCase() || "")
+            .filter(text => text != "");
+
+        return nonEmptyBlockTexts.join(" ");
+    }
+
+    static populateViaPostReq(req: ValidatedAuthRequest<SaveJobRequestSchema>): Job {
+        const { title, location, description, employmentTypeId, levelId, jobFunctionId } = req.body;
+
+        const job = new Job();
+        job.title = title;
+        job.location = location;
+        job.description = description;
+        job.employmentTypeId = employmentTypeId;
+        job.levelId = levelId
+        job.jobFunctionId = jobFunctionId;
+        job.creatorId = req.user.id;
+
+        return job;
+    }
+
+    populateViaPutReq(req: ValidatedAuthRequest<SaveJobRequestSchema>): Job {
+        const { title, location, employmentTypeId, description, levelId, jobFunctionId } = req.body;
+
+        if (this.employmentTypeId != employmentTypeId) {
+            this.employmentTypeId = employmentTypeId;
+        }
+
+        if (this.levelId != levelId) {
+            this.levelId = levelId;
+        }
+
+        if (this.jobFunctionId != jobFunctionId) {
+            this.jobFunctionId = jobFunctionId;
+        }
+
+        this.title = title;
+        this.location = location;
+        this.description = description;
+
+        return this;
+    }
 
     static get modifiers() {
         return {
@@ -51,10 +105,10 @@ export default class Job extends Model {
                 'employmentTypeId',
                 'levelId',
                 'jobFunctionId',
+                ...this.baseJsonSchema.required
             ],
 
             properties: {
-                id: { type: 'integer' },
                 creatorId: { type: 'integer' },
                 title: { type: 'string', minLength: 1, maxLength: 255 },
                 description: { type: 'string' },
@@ -62,6 +116,7 @@ export default class Job extends Model {
                 employmentTypeId: { type: 'integer' },
                 levelId: { type: 'integer' },
                 jobFunctionId: { type: 'integer' },
+                ...this.baseJsonSchema.properties
             }
         };
     }
@@ -106,8 +161,8 @@ export default class Job extends Model {
                 join: {
                     from: `${Job.tableName}.id`,
                     through: {
-                        from: 'job_skill.job_id',
-                        to: 'job_skill.skill_id'
+                        from: `${JobSkill.tableName}.job_id`,
+                        to: `${JobSkill.tableName}.skill_id`
                     },
                     to: `${Skill.tableName}.id`
                 }

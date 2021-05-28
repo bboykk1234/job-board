@@ -1,5 +1,6 @@
 import { ErrorMessage } from '@hookform/error-message';
-import { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { LoginFormFieldValues } from '../@types';
 import { UserContext } from '../contexts/User';
@@ -7,7 +8,8 @@ import FormContainer from './FormContainer';
 import FormFieldErrorMessage from './FormFieldErrorMessage';
 
 export default function LoginForm() {
-    const { login } = useContext(UserContext);
+    const router = useRouter();
+    const { user, login } = useContext(UserContext);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm<LoginFormFieldValues>({
         mode: "onBlur"
@@ -20,6 +22,12 @@ export default function LoginForm() {
         setIsInvalid(!isLoggedIn);
         setIsSubmitting(false);
     }
+
+    useEffect(() => {
+        if (user !== null) {
+            router.push("/")
+        }
+    }, [user])
 
     return (
         <FormContainer>
