@@ -62,6 +62,25 @@ export async function up(knex: Knex): Promise<void> {
             table.foreign("skill_id").references("skills.id");
             table.unique(["job_id", "skill_id"]);
         })
+        .createTable("job_applications", table => {
+            table.increments("id").primary().unsigned();
+            table.string("first_name", 255).notNullable();
+            table.string("last_name", 255).notNullable();
+            table.integer("job_id").notNullable().unsigned();
+            table.string("email", 255).notNullable();
+            table.string("phone_number", 20).notNullable();
+            table.string("address", 255).notNullable();
+            table.string("city", 30).notNullable();
+            table.string("province", 30).nullable();
+            table.string("postal_code", 30).notNullable();
+            table.string("country", 50).notNullable();
+            table.text("keywords").notNullable();
+            table.timestamp("created_at").nullable();
+            table.timestamp("updated_at").nullable();
+
+            table.foreign("job_id").references("jobs.id");
+        })
+        .raw("ALTER TABLE `job_applications` ADD FULLTEXT `keywords_fulltext_index` (`keywords`)");
 }
 
 
@@ -75,6 +94,15 @@ export async function down(knex: Knex): Promise<void> {
     const employmentTypesExists = await schemaBuilder.hasTable("employment_types")
     const levelsExists = await schemaBuilder.hasTable("levels")
     const usersExists = await schemaBuilder.hasTable("users")
+    const jobAppExists = await schemaBuilder.hasTable("job_applications")
+
+    if (jobAppExists) {
+        schemaBuilder.table("job_applications", table => {
+            table.dropIndex("keywords", "keywords_fulltext_index")
+            table.dropForeign(["job_id"]);
+        })
+        schemaBuilder.dropTable("job_applications");
+    }
 
     if (jobSkillExists) {
         schemaBuilder.table("job_skill", table => {
@@ -115,61 +143,5 @@ export async function down(knex: Knex): Promise<void> {
         schemaBuilder.dropTable("users");
     }
 
-    // knex.schema.hasTable("jobs")
-    //     .then(exists => {
-    //         if (!exists) {
-    //             return;
-    //         }
-    //         knex.schema.table("jobs", table => {
-    //             table.dropForeign(["creator_id"]);
-    //             table.dropForeign(["employment_type_id"]);
-    //             table.dropForeign(["level_id"]);
-    //             table.dropForeign(["job_function_id"]);
-    //         })
-    //         knex.schema.dropTable("jobs");
-    //     })
-
-    // knex.schema.hasTable("job_functions")
-    //     .then(exists => {
-    //         if (!exists) {
-    //             return;
-    //         }
-    //         knex.schema.dropTable("job_functions");
-    //     })
-
-    // knex.schema.hasTable("skills")
-    //     .then(exists => {
-    //         if (!exists) {
-    //             return;
-    //         }
-    //         knex.schema.dropTable("skills");
-    //     })
-
-    // knex.schema.hasTable("employment_types")
-    //     .then(exists => {
-    //         if (!exists) {
-    //             return;
-    //         }
-    //         knex.schema.dropTable("employment_types");
-    //     })
-
-    // knex.schema.hasTable("levels")
-    //     .then(exists => {
-    //         if (!exists) {
-    //             return;
-    //         }
-    //         knex.schema.dropTable("levels");
-    //     })
-
-    // knex.schema.hasTable("users")
-    //     .then(exists => {
-    //         if (!exists) {
-    //             return;
-    //         }
-    //         knex.schema.dropTable("users");
-    //     })
-
     return schemaBuilder;
 }
-
-export const config = { transaction: false };
