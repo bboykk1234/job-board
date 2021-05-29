@@ -1,4 +1,3 @@
-import { Pojo } from "objection";
 import { CreateJobApplicationRequestSchema, ValidatedRequestWithFiles } from "../@types";
 import Job from "./Job";
 import Model from "./Model";
@@ -19,12 +18,6 @@ export default class JobApplication extends Model {
 
     get name() {
         return `${this.firstName} ${this.lastName}`
-    }
-
-    $formatJson(json: Pojo) {
-        json = super.$formatJson(json);
-        delete json.keywords;
-        return json;
     }
 
     static populateViaPostReq(req: ValidatedRequestWithFiles<CreateJobApplicationRequestSchema>): JobApplication {
@@ -66,7 +59,6 @@ export default class JobApplication extends Model {
                 'province',
                 'postalCode',
                 'country',
-                'keywords',
                 ...this.baseJsonSchema.required
             ],
 
@@ -81,7 +73,6 @@ export default class JobApplication extends Model {
                 province: { type: 'string', minLength: 1, maxLength: 30 },
                 postalCode: { type: 'string', minLength: 1, maxLength: 30 },
                 country: { type: 'string', minLength: 1, maxLength: 50 },
-                keywords: { type: 'string' },
                 ...this.baseJsonSchema.properties
             }
         };

@@ -12,8 +12,6 @@ type UserApiRequest = {
 
 export default class AuthController {
     static login(req: UserApiRequest, res: NextApiResponse, next: NextHandler) {
-        console.log("hello motherfucker");
-
         passport.authenticate("login", async (err, user, info) => {
             try {
                 if (err) {

@@ -4,26 +4,18 @@ import Link from "./Link";
 import { ApiPaginationResponse, JobApplicationModelWithSkills } from "../@types";
 import ContentContainer from "./ContentContainer";
 import { useRouter } from "next/router";
-import { UserContext } from "../contexts/User";
 
-const JobApplicationList: React.FC = () => {
-    const { isLoggedIn } = useContext(UserContext);
+const JobApplicationList: React.FC<{ query: { id?: string, search?: string } }> = ({ query: { id: jobId, search } }) => {
     const router = useRouter()
-    const { id: jobId, search } = router.query;
     const [jobApplications, setJobApplications] = useState<JobApplicationModelWithSkills[]>([]);
-    const [searchInput, setSearchInput] = useState<string>(search as string || "");
+    const [searchInput, setSearchInput] = useState(search || "");
     const searchRef = useRef<HTMLInputElement>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!isLoggedIn) {
-            router.push("/")
-            return
-        }
-
-        async function loadJobApplications(jobId: string | undefined, search: string | undefined = "") {
+        async function loadJobApplications(jobId?: string, search?: string) {
             setIsLoading(true);
-            let params: { search: string | undefined, jobId: string | undefined } | {} = search ? { search } : {};
+            let params: { search?: string, jobId?: string } | {} = search ? { search } : {};
             params = jobId ? { ...params, jobId: jobId } : params;
             try {
                 const { data } = await axios
@@ -38,8 +30,8 @@ const JobApplicationList: React.FC = () => {
             setIsLoading(false);
         }
 
-        loadJobApplications(jobId as string, searchInput);
-    }, [jobId, searchInput, isLoggedIn]);
+        loadJobApplications(jobId, searchInput);
+    }, [jobId, searchInput]);
 
     async function downloadResume(id: number, filename: string) {
         try {
@@ -186,7 +178,7 @@ const JobApplicationList: React.FC = () => {
             </h4>
 
             <div className="input-group my-3 w-50">
-                <input ref={searchRef} type="text" onKeyPress={onEnter} name="searchInput" id="searchInput" className="form-control" placeholder="Type to search..." />
+                <input ref={searchRef} type="text" onKeyPress={onEnter} name="searchInput" id="searchInput" className="form-control" defaultValue={search} placeholder="Type to search..." />
                 <button className="btn btn-outline-secondary" onClick={handleSearchChange} type="button" id="searchBtn">Search</button>
             </div>
             {
@@ -212,5 +204,6 @@ const JobApplicationList: React.FC = () => {
         </ContentContainer>
     );
 }
+
 
 export default JobApplicationList;

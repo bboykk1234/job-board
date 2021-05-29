@@ -82,13 +82,11 @@ export async function up(knex: Knex): Promise<void> {
             table.string("province", 30).nullable();
             table.string("postal_code", 30).notNullable();
             table.string("country", 50).notNullable();
-            table.text("keywords").notNullable();
             table.timestamp("created_at").nullable();
             table.timestamp("updated_at").nullable();
 
             table.foreign("job_id").references("jobs.id");
         })
-        .raw("ALTER TABLE `job_applications` ADD FULLTEXT `keywords_fulltext_index` (`keywords`)");
 }
 
 
@@ -107,7 +105,6 @@ export async function down(knex: Knex): Promise<void> {
 
     if (jobAppExists) {
         schemaBuilder.table("job_applications", table => {
-            table.dropIndex("keywords", "keywords_fulltext_index")
             table.dropForeign(["job_id"]);
         })
         schemaBuilder.dropTable("job_applications");

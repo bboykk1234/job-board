@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { ReactComponent as Logo } from "../public/images/logo.svg";
 import { UserContext } from "../contexts/User";
 import NavLink from "./NavLink";
-import { Nav, Dropdown } from "react-bootstrap";
+import { Nav, Dropdown, Button } from "react-bootstrap";
 
 const Header: React.FC = () => {
     const { isLoggedIn, user, logout } = useContext(UserContext);
@@ -32,8 +32,8 @@ const Header: React.FC = () => {
                         </NavLink>
                     </Nav.Item>
                     {isLoggedIn && (
-                        <Dropdown as={Nav.Item} className="m-auto">
-                            <Dropdown.Toggle as={Nav.Link}>Manage</Dropdown.Toggle>
+                        <Dropdown className="m-auto">
+                            <Dropdown.Toggle variant="link" className="text-decoration-none">Manage</Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <NavLink href="/jobs/new" passHref>
                                     <Dropdown.Item>
@@ -49,8 +49,8 @@ const Header: React.FC = () => {
                         </Dropdown>
                     )}
                     {user ? (
-                        <Dropdown as={Nav.Item} className="m-auto">
-                            <Dropdown.Toggle as={Nav.Link} className="text-capitalize">{user.username}</Dropdown.Toggle>
+                        <Dropdown className="m-auto">
+                            <Dropdown.Toggle variant="link" className="text-decoration-none text-capitalize">{user.username}</Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item onClick={async () => {
                                     logout();
@@ -61,9 +61,11 @@ const Header: React.FC = () => {
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : (
-                        <li className="nav-item m-auto">
-                            <NavLink href="/login"><a className="nav-link">Log In</a></NavLink>
-                        </li>
+                        <Nav.Item className="m-auto">
+                            <NavLink href="/login" passHref>
+                                <Nav.Link>Log In</Nav.Link>
+                            </NavLink>
+                        </Nav.Item>
                     )}
                 </Nav>
             </header >

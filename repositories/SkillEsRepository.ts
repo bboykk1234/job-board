@@ -31,7 +31,6 @@ export default class SkillEsRepository {
                 }
             })
 
-            console.log(esRes.body.hits.hits)
             const hits = esRes.body.hits.hits || []
             if (hits.length === 0) {
                 resolve([])

@@ -5,28 +5,23 @@ import JobApplication from "../../models/JobApplication";
 import { File } from "formidable";
 import Job from "../../models/Job";
 import FileType from "file-type";
-import { extractForJobApplication } from "../../services/ExtractSearchKeywords";
 import fs from "fs";
 import path from "path";
+import JobApplicationEsRepository from "../../repositories/JobApplicationEsRepository";
 
 export default class JobApplicationController {
     static async index(req: NextApiRequest, res: NextApiResponse, next: NextHandler) {
-        const { jobId: jobId, search } = req.query;
-        const query = JobApplication.query().withGraphFetched("job(selectAllExceptDesc).[skills]")
+        const { jobId, search } = req.query as { jobId?: string, search?: string };
 
-        if (jobId) {
-            query.modifyGraph("job", builder => {
-                builder.where({ id: jobId });
-            })
-        }
+        const { ids: jobApplicationIds, total } = await JobApplicationEsRepository.search({ jobId, search })
+        const jobApplications = await JobApplication.query()
+            .whereIn("id", jobApplicationIds)
+            .withGraphFetched("job(selectAllExceptDesc).[skills]")
 
-        if (search) {
-            query.modify("search", search);
-        }
-
-        const jobApplications = await query.page(0, 25)
-
-        res.json(jobApplications)
+        res.json({
+            results: jobApplications,
+            total
+        })
     }
 
     static async create(req: ValidatedRequestWithFiles<CreateJobApplicationRequestSchema>, res: NextApiResponse, next: NextHandler) {
@@ -59,11 +54,17 @@ export default class JobApplicationController {
         }
 
         const jobApplicationObj = JobApplication.populateViaPostReq(req);
-        jobApplicationObj.keywords = await extractForJobApplication(jobApplicationObj);
-        const jobApplication = await JobApplication.query()
-            .insert(jobApplicationObj)
+        const jobApplication = await JobApplication.transaction(async () => {
+            const jobApplication = await JobApplication.query()
+                .insert(jobApplicationObj)
+            const esRes = await JobApplicationEsRepository.create(jobApplication)
+            if (esRes.body.result != "created") {
+                console.log(esRes)
+            }
+            fs.renameSync(file.path, `storage/resumes/${jobApplication.id}.pdf`);
 
-        fs.renameSync(file.path, `storage/resumes/${jobApplication.id}.pdf`);
+            return jobApplication
+        })
 
         res.json(jobApplication);
     }
