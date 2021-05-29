@@ -1,7 +1,14 @@
 import * as Knex from "knex";
 import bcrypt from "bcrypt";
+import Job from "../models/Job";
+import JobEsRepository from "../repositories/JobEsRepository";
+import Skill from "../models/Skill";
+import SkillEsRepository from "../repositories/SkillEsRepository";
+import { Model } from "objection";
 
 export async function seed(knex: Knex): Promise<void> {
+    Model.knex(knex)
+
     await knex("job_skill").delete();
     await knex("jobs").delete();
     await knex("skills").delete();
@@ -247,6 +254,14 @@ export async function seed(knex: Knex): Promise<void> {
         created_at: new Date(),
         updated_at: new Date()
     });
+    const skills = await Skill.query()
+    try {
+        await SkillEsRepository.createBulk(skills)
+    } catch (err) {
+        console.log(err.meta.body.error);
+        console.log(err.meta.meta.request)
+        throw err
+    }
     //#endregion skills
 
     //#region job_functions
@@ -395,6 +410,8 @@ export async function seed(knex: Knex): Promise<void> {
         { job_id: softEng1JobId, skill_id: cicdSkillId, created_at: new Date(), updated_at: new Date() },
         { job_id: softEng1JobId, skill_id: gcpSkillId, created_at: new Date(), updated_at: new Date() },
     ]);
+    const softEng1Job = await Job.query().findById(softEng1JobId)
+    await JobEsRepository.create(softEng1Job)
 
     const softEng2JobId = await knex("jobs").insert({
         creator_id: userId,
@@ -414,6 +431,8 @@ export async function seed(knex: Knex): Promise<void> {
         { job_id: softEng2JobId, skill_id: golangSkillId, created_at: new Date(), updated_at: new Date() },
         { job_id: softEng2JobId, skill_id: scssSkillId, created_at: new Date(), updated_at: new Date() },
     ]);
+    const softEng2Job = await Job.query().findById(softEng2JobId)
+    await JobEsRepository.create(softEng2Job)
 
     const sales1JobId = await knex("jobs").insert({
         creator_id: userId,
@@ -432,6 +451,8 @@ export async function seed(knex: Knex): Promise<void> {
         { job_id: sales1JobId, skill_id: engSkillId, created_at: new Date(), updated_at: new Date() },
         { job_id: sales1JobId, skill_id: communicationSkillId, created_at: new Date(), updated_at: new Date() },
     ]);
+    const sales1Job = await Job.query().findById(sales1JobId)
+    await JobEsRepository.create(sales1Job)
 
     const fullstack1JobId = await knex("jobs").insert({
         creator_id: userId,
@@ -453,6 +474,8 @@ export async function seed(knex: Knex): Promise<void> {
         { job_id: fullstack1JobId, skill_id: cplusplusSkillId, created_at: new Date(), updated_at: new Date() },
         { job_id: fullstack1JobId, skill_id: pythonSkillId, created_at: new Date(), updated_at: new Date() },
     ]);
+    const fullstack1Job = await Job.query().findById(fullstack1JobId)
+    await JobEsRepository.create(fullstack1Job)
 
     const hr1JobId = await knex("jobs").insert({
         creator_id: userId,
@@ -471,5 +494,7 @@ export async function seed(knex: Knex): Promise<void> {
         { job_id: hr1JobId, skill_id: engSkillId, created_at: new Date(), updated_at: new Date() },
         { job_id: hr1JobId, skill_id: communicationSkillId, created_at: new Date(), updated_at: new Date() },
     ]);
+    const hr1Job = await Job.query().findById(hr1JobId)
+    await JobEsRepository.create(hr1Job)
     //#endregion jobs
 };

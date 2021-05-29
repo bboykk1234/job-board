@@ -9,7 +9,7 @@ import JobSkill from "../models/JobSkill";
 import Level from "../models/Level";
 import Skill from "../models/Skill";
 
-export default class JobManager {
+export default class JobRepository {
     static async createBasedOnReqBody(user: User, body: SaveJobRequestBody): Promise<Job> {
         return new Promise(async (resolve, reject) => {
             try {
@@ -46,7 +46,7 @@ export default class JobManager {
     static async updateBasedOnReqBody(id: number, user: User, body: SaveJobRequestBody): Promise<Job> {
         return new Promise(async (resolve, reject) => {
             try {
-                const job = await Job.query()
+                let job = await Job.query()
                     .where("id", id)
                     .whereNull("closed_at")
                     .withGraphFetched({
@@ -58,16 +58,15 @@ export default class JobManager {
                     throw new ModelNotFoundError(404, "Job not found.")
                 }
 
-                const { skillIds } = body;
-                const uniqSkillIds = uniq(skillIds);
-
                 await this.findRequiredModelsBasedOnReqBody(body)
 
-                job.populateViaPutReqBody(body)
-                await Job.query()
-                    .where("id", job.id)
-                    .update(job)
+                if (!job.skills) {
+                    const skills = await Job.relatedQuery("skills")
+                    job.skills = skills
+                }
 
+                const { skillIds } = body;
+                const uniqSkillIds = uniq(skillIds);
                 const oldSkillIds = job.skills?.map(skill => skill.id) || [];
                 const newSkillIds = difference(uniqSkillIds, oldSkillIds);
                 const existingSkillIds = intersection(oldSkillIds, uniqSkillIds);
@@ -78,32 +77,41 @@ export default class JobManager {
                     throw new ModelNotFoundError(400, "No skills associated with job.")
                 }
 
-                await JobSkill.knexQuery()
-                    .insert(newSkillIds.map(skillId => {
-                        return {
-                            job_id: job.id,
-                            skill_id: skillId,
-                            created_at: new Date,
-                            updated_at: new Date,
-                        }
-                    }))
-                    .onConflict(["job_id", "skill_id"])
-                    .ignore()
+                job = await Job.transaction(async () => {
+                    job.populateViaPutReqBody(body)
+                    await Job.query()
+                        .where("id", job.id)
+                        .update(job)
 
-                let skillsWithoutDeletedSkills: Skill[] = [...(job.skills || [])]
-                if (skillIdsShouldDelete.length > 0) {
-                    await JobSkill.query()
-                        .where("job_id", job.id)
-                        .whereIn("skill_id", skillIdsShouldDelete)
-                        .delete()
+                    await JobSkill.knexQuery()
+                        .insert(newSkillIds.map(skillId => {
+                            return {
+                                job_id: job.id,
+                                skill_id: skillId,
+                                created_at: new Date,
+                                updated_at: new Date,
+                            }
+                        }))
+                        .onConflict(["job_id", "skill_id"])
+                        .ignore()
 
-                    skillsWithoutDeletedSkills = skillsWithoutDeletedSkills.filter(skill => !skillIdsShouldDelete.includes(skill.id)) || []
-                }
+                    let skillsWithoutDeletedSkills: Skill[] = [...(job.skills || [])]
+                    if (skillIdsShouldDelete.length > 0) {
+                        await JobSkill.query()
+                            .where("job_id", job.id)
+                            .whereIn("skill_id", skillIdsShouldDelete)
+                            .delete()
 
-                job.skills = [
-                    ...newSkills,
-                    ...skillsWithoutDeletedSkills
-                ]
+                        skillsWithoutDeletedSkills = skillsWithoutDeletedSkills.filter(skill => !skillIdsShouldDelete.includes(skill.id)) || []
+                    }
+
+                    job.skills = [
+                        ...newSkills,
+                        ...skillsWithoutDeletedSkills
+                    ]
+
+                    return job
+                })
 
                 resolve(job)
             } catch (err) {

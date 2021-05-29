@@ -14,7 +14,6 @@ export default class JobApplication extends Model {
     province!: string
     postalCode!: string
     country!: string
-    keywords!: string
 
     static tableName = "job_applications"
 

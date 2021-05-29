@@ -3,7 +3,8 @@ import { NextHandler } from "next-connect";
 import { NextApiRequestWithId, SaveJobRequestSchema, ValidatedAuthRequest } from "../../@types";
 import Job from "../../models/Job";
 import JobSkill from "../../models/JobSkill";
-import JobManager from "../../services/JobManager";
+import JobEsRepository from "../../repositories/JobEsRepository";
+import JobRepository from "../../repositories/JobRepository";
 
 export default class JobController {
     static async index(req: NextApiRequest, res: NextApiResponse, next: NextHandler) {
@@ -73,12 +74,23 @@ export default class JobController {
     }
 
     static async create(req: ValidatedAuthRequest<SaveJobRequestSchema>, res: NextApiResponse, next: NextHandler) {
-        const job = await JobManager.createBasedOnReqBody(req.user, req.body)
+        const job = await JobRepository.createBasedOnReqBody(req.user, req.body)
+        const esRes = await JobEsRepository.create(job)
+
+        if (esRes.body.result != "created") {
+            console.log(esRes)
+        }
+
         res.json(job);
     }
 
     static async update(req: ValidatedAuthRequest<SaveJobRequestSchema>, res: NextApiResponse, next: NextHandler) {
-        const job = await JobManager.updateBasedOnReqBody(req.params.id, req.user, req.body)
+        const job = await JobRepository.updateBasedOnReqBody(req.params.id, req.user, req.body)
+        const esRes = await JobEsRepository.update(job)
+
+        if (esRes.body.result != "updated") {
+            console.log(esRes)
+        }
 
         res.json(job);
     }
@@ -89,6 +101,14 @@ export default class JobController {
             .patch(
                 { closedAt: new Date }
             )
+        const job = await Job.query()
+            .findById(req.params.id)
+
+        const esRes = await JobEsRepository.update(job)
+
+        if (esRes.body.result != "updated") {
+            console.log(esRes)
+        }
 
         res.json({
             status: affected && affected >= 0,

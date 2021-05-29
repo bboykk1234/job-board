@@ -15,6 +15,7 @@
         "seed:run": "ts-node --transpile-only ./node_modules/.bin/knex seed:run"
     },
     "dependencies": {
+        "@elastic/elasticsearch": "6",
         "@hookform/error-message": "^2.0.0",
         "@popperjs/core": "^2.9.2",
         "@types/js-cookie": "^2.2.6",

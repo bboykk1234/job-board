@@ -1,3 +1,4 @@
+import "dotenv/config"
 import AuthController from "../../http/controllers/AuthController"
 import { Model } from 'objection'
 import knexConfig from '../../knexfile'

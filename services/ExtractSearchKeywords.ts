@@ -74,3 +74,59 @@ export const extractForJobApplication = async (jobApplication: JobApplication) =
 
     return uniq(searchKeywords).join(" ") || "";
 }
+
+export const extractForJob = async (job: Job) => {
+    const title = job.title.trim().toLowerCase();
+    const location = job.location.trim().toLowerCase();
+    const jobDescPlaintext = job.getDescriptionPlainText();
+
+    if (!job.employmentType) {
+        const employmentType = await job.$relatedQuery("employmentType").first()
+        job.employmentType = employmentType
+    }
+
+    if (!job.level) {
+        const level = await job.$relatedQuery("level").first()
+        job.level = level
+    }
+
+    if (!job.jobFunction) {
+        const jobFunction = await job.$relatedQuery("jobFunction").first()
+        job.jobFunction = jobFunction
+    }
+
+    if (!job.skills) {
+        const skills = await job.$relatedQuery("skills")
+        job.skills = skills
+    }
+
+    const employmentType = job.employmentType;
+    const level = job.level;
+    const jobFunction = job.jobFunction;
+    const skillNames = job.skills.map(skill => skill.name.trim().toLowerCase())
+        .join(" ") || "";
+    const typeName = employmentType.name.trim().toLowerCase();
+    const levelName = level.name.trim().toLowerCase();
+    const jobFunctionName = jobFunction.name.trim().toLowerCase();
+
+    const keywords = [
+        title,
+        location,
+        jobDescPlaintext,
+        typeName,
+        levelName,
+        jobFunctionName,
+        skillNames,
+    ];
+
+    const searchKeywords = [
+        ...keywords,
+        ...keywordExtractor.extract(jobDescPlaintext, {
+            language: "english",
+            remove_digits: true,
+            return_changed_case: true,
+        })
+    ];
+
+    return uniq(searchKeywords).join(" ") || "";
+}
