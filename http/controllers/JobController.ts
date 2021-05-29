@@ -208,4 +208,16 @@ export default class JobController {
             skills
         });
     }
+
+    static async close(req: NextApiRequestWithId, res: NextApiResponse) {
+        const affected = await Job.query()
+            .findById(req.params.id)
+            .patch(
+                { closedAt: new Date }
+            )
+
+        res.json({
+            status: affected && affected >= 0,
+        });
+    }
 }

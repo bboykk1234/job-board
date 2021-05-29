@@ -13,11 +13,11 @@ export const config = {
 }
 
 handler
-    .get("/api/job_applications",
+    .get(
         passport.authenticate("jwt", { session: false }),
         JobApplicationController.index
     )
-    .post("/api/job_applications",
+    .post(
         formParser({ multiples: true, uploadDir: "storage/uploads", single: "resume" }),
         validate({ body: CreateJobApplicationRequestRules }),
         JobApplicationController.create

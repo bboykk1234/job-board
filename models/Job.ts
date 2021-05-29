@@ -16,7 +16,7 @@ export default class Job extends Model {
     employmentTypeId!: number
     levelId!: number
     jobFunctionId!: number
-    closedAt!: string
+    closedAt!: Date | null
 
     skills?: Skill[]
     employmentType?: EmploymentType

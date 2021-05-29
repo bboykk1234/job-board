@@ -51,7 +51,7 @@ export default function JobDetail() {
         try {
             const { data } = await axios.post(`/jobs/${jobId}/close`);
             if (data.status) {
-                router.push("/jobs");
+                await router.push("/jobs");
             }
         } catch (err) {
             console.log(err);

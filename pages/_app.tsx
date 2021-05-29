@@ -8,6 +8,7 @@ import { UserProvider } from '../contexts/User'
 import Layout from "../components/Layout";
 import axios from 'axios';
 import Cookies from "js-cookie";
+import { PageLoadingProvider } from "../contexts/PageLoading";
 
 axios.interceptors.request.use(
     async (config) => {
@@ -33,9 +34,11 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Head>
             <NextCookieProvider cookie={pageProps.cookie}>
                 <UserProvider>
-                    <Layout>
-                        <Component {...pageProps} />
-                    </Layout>
+                    <PageLoadingProvider>
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
+                    </PageLoadingProvider>
                 </UserProvider>
             </NextCookieProvider>
         </>

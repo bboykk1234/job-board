@@ -1,17 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler } from "next-connect";
-import { CreateJobApplicationRequestSchema, ValidatedRequestWithFiles } from "../../@types";
+import { CreateJobApplicationRequestSchema, NextApiRequestWithId, ValidatedRequestWithFiles } from "../../@types";
 import JobApplication from "../../models/JobApplication";
 import { File } from "formidable";
 import Job from "../../models/Job";
 import FileType from "file-type";
 import { extractForJobApplication } from "../../services/ExtractSearchKeywords";
 import fs from "fs";
+import path from "path";
 
 export default class JobApplicationController {
     static async index(req: NextApiRequest, res: NextApiResponse, next: NextHandler) {
         const { jobId: jobId, search } = req.query;
-        const query = JobApplication.query().withGraphFetched("job(selectAllExceptDesc)")
+        const query = JobApplication.query().withGraphFetched("job(selectAllExceptDesc).[skills]")
 
         if (jobId) {
             query.modifyGraph("job", builder => {
@@ -65,5 +66,27 @@ export default class JobApplicationController {
         fs.renameSync(file.path, `storage/resumes/${jobApplication.id}.pdf`);
 
         res.json(jobApplication);
+    }
+
+    static async download(req: NextApiRequestWithId, res: NextApiResponse, next: NextHandler) {
+        const { id } = req.params;
+        const jobApplication = await JobApplication.query().findById(id);
+
+        if (!jobApplication) {
+            res.status(404).end()
+            return;
+        }
+
+        const filePath = path.join(__dirname, "../../", `storage/resumes/${jobApplication.id}.pdf`)
+
+        if (!fs.existsSync(filePath)) {
+            res.status(404).end()
+            return
+        }
+
+        const fileBuffer = fs.readFileSync(filePath);
+
+        res.setHeader("Content-Type", "application/pdf")
+        res.send(fileBuffer);
     }
 }

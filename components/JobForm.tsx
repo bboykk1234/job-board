@@ -1,5 +1,4 @@
 import { convertFromRaw, RawDraftContentState } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
 import { JobFormFieldValues, Skill, GetJobResponseSchema } from "../@types";
 import { useForm, Controller } from "react-hook-form";
 import AsyncSelect from 'react-select/async';
@@ -54,7 +53,7 @@ export default function JobForm() {
             }
         }
 
-        getJobDetail(jobId);
+        getJobDetail(jobId as string);
     }, [jobId, router, reset]);
 
     async function onSubmit(values: JobFormFieldValues) {
@@ -85,7 +84,7 @@ export default function JobForm() {
                     description: JSON.stringify(description),
                     skillIds: skills.map(skill => skill.id),
                 });
-                router.push("/jobs/edited");
+                await router.push("/jobs/edited");
                 return;
             }
 
@@ -98,7 +97,7 @@ export default function JobForm() {
                 description: JSON.stringify(description),
                 skillIds: skills.map(skill => skill.id),
             });
-            router.push("/jobs/created");
+            await router.push("/jobs/created");
         } catch (err) {
             console.log(err);
         } finally {

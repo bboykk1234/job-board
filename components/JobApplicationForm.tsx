@@ -43,7 +43,7 @@ export default function JobApplicationForm() {
                     }
                 });
 
-            router.push("/jobs/applied");
+            await router.push("/jobs/applied");
         } catch (err) {
             console.log(err);
         }

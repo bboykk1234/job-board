@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import { LoginFormFieldValues, UserProfile } from "../@types";
 import { useCookie } from "next-universal-cookie";
 import axios, { AxiosResponse } from "axios";
-import { useRouter } from "next/router";
 
 export const useUser = () => {
     const [user, setUser] = useState<UserProfile | null>(null);
     const [isLoggedIn, setIsLoggedin] = useState<boolean | null>(null);
-    const router = useRouter();
     const [cookies, setCookie, removeCookie] = useCookie(["tk"]);
 
     useEffect(() => {

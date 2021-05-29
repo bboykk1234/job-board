@@ -233,3 +233,13 @@ export interface SaveJobRequestSchema extends ValidatedRequestSchema {
 export interface validationOptions extends Options {
     single: string,
 }
+
+export interface PageLoadingContext {
+    isPageLoading: boolean,
+    setIsPageLoading: React.Dispatch<SetStateAction<boolean>>
+}
+
+export interface ApiPaginationResponse<T extends {}> {
+    results: T[]
+    total: number
+}

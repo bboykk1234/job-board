@@ -1,11 +1,13 @@
 import axios, { AxiosResponse } from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Link from "./Link";
-import { JobApplicationModelWithSkills } from "../@types";
+import { ApiPaginationResponse, JobApplicationModelWithSkills } from "../@types";
 import ContentContainer from "./ContentContainer";
 import { useRouter } from "next/router";
+import { UserContext } from "../contexts/User";
 
 const JobApplicationList: React.FC = () => {
+    const { isLoggedIn } = useContext(UserContext);
     const router = useRouter()
     const { id: jobId, search } = router.query;
     const [jobApplications, setJobApplications] = useState<JobApplicationModelWithSkills[]>([]);
@@ -14,16 +16,22 @@ const JobApplicationList: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (!isLoggedIn) {
+            router.push("/")
+            return
+        }
+
         async function loadJobApplications(jobId: string | undefined, search: string | undefined = "") {
             setIsLoading(true);
             let params: { search: string | undefined, jobId: string | undefined } | {} = search ? { search } : {};
             params = jobId ? { ...params, jobId: jobId } : params;
             try {
                 const { data } = await axios
-                    .get<any, AxiosResponse<JobApplicationModelWithSkills[]>>(`/job_applications`, {
+                    .get<any, AxiosResponse<ApiPaginationResponse<JobApplicationModelWithSkills>>>(`/job_applications`, {
                         params
                     });
-                setJobApplications(data);
+
+                setJobApplications(data.results);
             } catch (err) {
                 console.log(err);
             }
@@ -31,26 +39,32 @@ const JobApplicationList: React.FC = () => {
         }
 
         loadJobApplications(jobId as string, searchInput);
-    }, [jobId, searchInput]);
+    }, [jobId, searchInput, isLoggedIn]);
 
     async function downloadResume(id: number, filename: string) {
-        const { data } = await axios.get(
-            `/job_applications/${id}/resume`, {
-            responseType: "blob",
+        try {
+            const { data } = await axios.get(
+                `/job_applications/${id}/resume`, {
+                responseType: "blob",
+            }
+            );
+            const url = window.URL.createObjectURL(new Blob([data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${filename}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+        } catch (err) {
+            if (err.response && err.response.status == 404) {
+                console.log("Resume not found")
+            }
         }
-        );
-        const url = window.URL.createObjectURL(new Blob([data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `${filename}.pdf`);
-        document.body.appendChild(link);
-        link.click();
     }
 
-    function handleSearchChange() {
+    async function handleSearchChange() {
         const newSearchInput = searchRef.current?.value || "";
         setSearchInput(newSearchInput);
-        router.push({
+        await router.push({
             pathname: jobId ? `/jobs/${jobId}/applications` : `/applications`,
             query: { search: newSearchInput }
         })

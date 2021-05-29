@@ -11,6 +11,7 @@ import JobFunctionController from "../../http/controllers/JobFunctionController"
 import SaveJobRequestRules from "../../http/requests/SaveJobRequestRules"
 import handler from "../../extensions/RouteHandler";
 import validate from "../../extensions/RequestValidator";
+import JobApplicationController from "../../http/controllers/JobApplicationController";
 
 const knex = Knex(knexConfig);
 
@@ -40,6 +41,10 @@ handler
         validate({ body: SaveJobRequestRules }),
         JobController.update
     )
+    .post("/api/jobs/:id/close",
+        passport.authenticate("jwt", { session: false }),
+        JobController.close
+    )
 
 handler
     .get("/api/employment_types", EmploymentTypeController.index)
@@ -52,5 +57,8 @@ handler
 
 handler
     .get("/api/job_functions", JobFunctionController.index)
+
+handler
+    .get("/api/job_applications/:id/resume", JobApplicationController.download)
 
 export default handler;

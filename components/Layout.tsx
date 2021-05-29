@@ -1,20 +1,45 @@
-import React, { useContext } from 'react';
-import { UserContext } from '../contexts/User';
+import React, { useContext, useEffect } from 'react';
+import { PageLoadingContext } from '../contexts/PageLoading';
 import Header from "./Header";
+import LoadSpinner from "./LoadSpinner";
+import { useRouter } from "next/router";
+import { UserContext } from '../contexts/User';
 
 const Layout: React.FC = ({ children }) => {
-    const { isLoggedIn } = useContext(UserContext);
+    const router = useRouter();
+    const { isLoggedIn } = useContext(UserContext)
+    const { isPageLoading, setIsPageLoading } = useContext(PageLoadingContext)
+
+    useEffect(() => {
+        if (isLoggedIn === null) {
+            return
+        }
+
+        // Non-loggedin user allow to go to login page
+        if (isLoggedIn && ["/login"].includes(router.pathname)) {
+            router.push("/")
+            return
+        }
+
+        if (isLoggedIn === false && [
+            "/applications",
+            "/jobs/[id]/applications",
+            "/jobs/new",
+            "/jobs/edit",
+        ].includes(router.pathname)
+        ) {
+            router.push("/")
+            return
+        }
+
+        setIsPageLoading(false)
+    }, [isLoggedIn, router.pathname])
 
     return (
         <div className="container-fuild d-flex flex-column h-100" style={{ minWidth: "1300px" }}>
-
-            {isLoggedIn === null
+            {isPageLoading
                 ? (
-                    <div className="text-center my-5">
-                        <div className="spinner-border" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
+                    <LoadSpinner />
                 ) : (
                     <>
                         <Header />
@@ -25,4 +50,4 @@ const Layout: React.FC = ({ children }) => {
     )
 }
 
-export default Layout;
+export default Layout
