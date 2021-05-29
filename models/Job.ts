@@ -1,5 +1,6 @@
 import { RawDraftContentState } from "draft-js";
 import { SaveJobRequestSchema, ValidatedAuthRequest } from "../@types";
+import Company from "./Company";
 import EmploymentType from "./EmploymentType";
 import JobFunction from "./JobFunction";
 import JobSkill from "./JobSkill";
@@ -13,6 +14,7 @@ export default class Job extends Model {
     title!: string
     description!: string
     location!: string
+    companyId!: number
     employmentTypeId!: number
     levelId!: number
     jobFunctionId!: number
@@ -38,12 +40,13 @@ export default class Job extends Model {
     }
 
     static populateViaPostReq(req: ValidatedAuthRequest<SaveJobRequestSchema>): Job {
-        const { title, location, description, employmentTypeId, levelId, jobFunctionId } = req.body;
+        const { title, location, description, companyId, employmentTypeId, levelId, jobFunctionId } = req.body;
 
         const job = new Job();
         job.title = title;
         job.location = location;
         job.description = description;
+        job.companyId = companyId;
         job.employmentTypeId = employmentTypeId;
         job.levelId = levelId
         job.jobFunctionId = jobFunctionId;
@@ -53,7 +56,7 @@ export default class Job extends Model {
     }
 
     populateViaPutReq(req: ValidatedAuthRequest<SaveJobRequestSchema>): Job {
-        const { title, location, employmentTypeId, description, levelId, jobFunctionId } = req.body;
+        const { title, location, companyId, employmentTypeId, description, levelId, jobFunctionId } = req.body;
 
         if (this.employmentTypeId != employmentTypeId) {
             this.employmentTypeId = employmentTypeId;
@@ -65,6 +68,10 @@ export default class Job extends Model {
 
         if (this.jobFunctionId != jobFunctionId) {
             this.jobFunctionId = jobFunctionId;
+        }
+
+        if (this.companyId != companyId) {
+            this.companyId = companyId;
         }
 
         this.title = title;
@@ -83,6 +90,7 @@ export default class Job extends Model {
                     ref("creator_id"),
                     ref("title"),
                     ref("location"),
+                    ref("company_id"),
                     ref("employment_type_id"),
                     ref("level_id"),
                     ref("job_function_id"),
@@ -102,6 +110,7 @@ export default class Job extends Model {
                 'title',
                 'description',
                 'location',
+                'companyId',
                 'employmentTypeId',
                 'levelId',
                 'jobFunctionId',
@@ -113,6 +122,7 @@ export default class Job extends Model {
                 title: { type: 'string', minLength: 1, maxLength: 255 },
                 description: { type: 'string' },
                 location: { type: 'string', minLength: 1, maxLength: 255 },
+                companyId: { type: 'integer' },
                 employmentTypeId: { type: 'integer' },
                 levelId: { type: 'integer' },
                 jobFunctionId: { type: 'integer' },
@@ -129,6 +139,14 @@ export default class Job extends Model {
                 join: {
                     from: `${Job.tableName}.creator_id`,
                     to: `${User.tableName}.id`,
+                }
+            },
+            company: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Company,
+                join: {
+                    from: `${Job.tableName}.company_id`,
+                    to: `${Company.tableName}.id`,
                 }
             },
             employmentType: {

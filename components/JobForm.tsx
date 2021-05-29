@@ -12,6 +12,7 @@ import FormFieldErrorMessage from "./FormFieldErrorMessage";
 import { ErrorMessage } from "@hookform/error-message";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
+import CompanySelect from "./CompanySelect";
 
 const EditorNoSSR = dynamic<{ wrapperId: number, wrapperClassName: string, editorClassName: string, toolbarClassName: string, onContentStateChange: Function, toolbar: object, initialContentState: RawDraftContentState | null }>(
     () => import('react-draft-wysiwyg').then(mod => mod.Editor) as any,
@@ -39,6 +40,7 @@ export default function JobForm() {
                 reset({
                     title: data.title,
                     location: data.location,
+                    company: data.company,
                     employmentType: data.employmentType,
                     level: data.level,
                     jobFunction: data.jobFunction,
@@ -60,7 +62,7 @@ export default function JobForm() {
         setIsSubmitting(true);
         try {
             // By pass type error, it should not be empty form validated
-            if (!(values.employmentType && values.level && values.jobFunction)) {
+            if (!(values.employmentType && values.level && values.jobFunction && values.company)) {
                 return;
             }
 
@@ -72,6 +74,7 @@ export default function JobForm() {
                 location,
                 skills,
                 description,
+                company: { id: companyId },
             } = values;
 
             if (jobId) {
@@ -79,6 +82,7 @@ export default function JobForm() {
                     title,
                     location,
                     levelId,
+                    companyId,
                     employmentTypeId,
                     jobFunctionId,
                     description: JSON.stringify(description),
@@ -92,6 +96,7 @@ export default function JobForm() {
                 title,
                 location,
                 levelId,
+                companyId,
                 employmentTypeId,
                 jobFunctionId,
                 description: JSON.stringify(description),
@@ -151,9 +156,13 @@ export default function JobForm() {
                     </div>
                 </div>
                 <div className="mb-3 row">
-                    <div className="col-12">
+                    <div className="col-6">
                         <JobFunctionSelect control={control} />
                         <ErrorMessage errors={errors} name="jobFunction" as={FormFieldErrorMessage} />
+                    </div>
+                    <div className="col-6">
+                        <CompanySelect control={control} />
+                        <ErrorMessage errors={errors} name="company" as={FormFieldErrorMessage} />
                     </div>
                 </div>
                 <div className="mb-3">

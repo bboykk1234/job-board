@@ -17,6 +17,34 @@ export async function seed(knex: Knex): Promise<void> {
         updated_at: new Date()
     });
 
+    //#region companies
+    const companyAId = await knex("companies").insert({
+        name: "Company A",
+        created_at: new Date(),
+        updated_at: new Date()
+    });
+    const companyBId = await knex("companies").insert({
+        name: "Company B",
+        created_at: new Date(),
+        updated_at: new Date()
+    });
+    const companyCId = await knex("companies").insert({
+        name: "Company C",
+        created_at: new Date(),
+        updated_at: new Date()
+    });
+    const companyDId = await knex("companies").insert({
+        name: "Company D",
+        created_at: new Date(),
+        updated_at: new Date()
+    });
+    const companyEId = await knex("companies").insert({
+        name: "Company E",
+        created_at: new Date(),
+        updated_at: new Date()
+    });
+    //#endregion companies
+
     //#region employment_types
     const internshipETId = await knex("employment_types").insert({
         name: "Internship",
@@ -354,6 +382,7 @@ export async function seed(knex: Knex): Promise<void> {
         creator_id: userId,
         title: "Software Engineer",
         location: "Redmond, WA",
+        company_id: companyAId,
         employment_type_id: fulltimeETId,
         level_id: midSeniorLevelId,
         job_function_id: itFnId,
@@ -371,6 +400,7 @@ export async function seed(knex: Knex): Promise<void> {
         creator_id: userId,
         title: "Software Engineer",
         location: "San Francisco, CA",
+        company_id: companyBId,
         employment_type_id: fulltimeETId,
         level_id: assocLevelId,
         job_function_id: itFnId,
@@ -389,6 +419,7 @@ export async function seed(knex: Knex): Promise<void> {
         creator_id: userId,
         title: "Sales Consultant",
         location: "Kuala Lumpur, Federal Territory of Kuala Lumpur, Malaysia",
+        company_id: companyCId,
         employment_type_id: fulltimeETId,
         level_id: assocLevelId,
         job_function_id: salesFnId,
@@ -406,6 +437,7 @@ export async function seed(knex: Knex): Promise<void> {
         creator_id: userId,
         title: "Fullstack Engineer",
         location: "Kuala Lumpur, Federal Territory of Kuala Lumpur, Malaysia",
+        company_id: companyDId,
         employment_type_id: fulltimeETId,
         level_id: assocLevelId,
         job_function_id: itFnId,
@@ -426,6 +458,7 @@ export async function seed(knex: Knex): Promise<void> {
         creator_id: userId,
         title: "HR Generalist",
         location: "Kuala Lumpur, Federal Territory of Kuala Lumpur, Malaysia",
+        company_id: companyAId,
         employment_type_id: fulltimeETId,
         level_id: assocLevelId,
         job_function_id: itFnId,

@@ -3,6 +3,7 @@ import Joi from "joi";
 const SaveJobRequestRules = Joi.object({
     title: Joi.string().required(),
     location: Joi.string().required(),
+    companyId: Joi.number().required(),
     employmentTypeId: Joi.number().required(),
     levelId: Joi.number().required(),
     jobFunctionId: Joi.number().required(),

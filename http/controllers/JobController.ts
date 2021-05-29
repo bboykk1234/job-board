@@ -2,6 +2,7 @@ import { difference, intersection, uniq } from "lodash";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler } from "next-connect";
 import { NextApiRequestWithId, SaveJobRequestSchema, ValidatedAuthRequest } from "../../@types";
+import Company from "../../models/Company";
 import EmploymentType from "../../models/EmploymentType";
 import Job from "../../models/Job";
 import JobFunction from "../../models/JobFunction";
@@ -28,7 +29,8 @@ export default class JobController {
             jobFunction: true,
             employmentType: true,
             level: true,
-            skills: true
+            skills: true,
+            company: true,
         })
             .first()
 
@@ -43,7 +45,7 @@ export default class JobController {
     }
 
     static async create(req: ValidatedAuthRequest<SaveJobRequestSchema>, res: NextApiResponse, next: NextHandler) {
-        const { employmentTypeId, skillIds, levelId, jobFunctionId } = req.body;
+        const { companyId, employmentTypeId, skillIds, levelId, jobFunctionId } = req.body;
         const employmentType = await EmploymentType.query().findById(employmentTypeId);
 
         if (!employmentType) {
@@ -80,6 +82,16 @@ export default class JobController {
             res.status(400).json({
                 type: "body",
                 message: "Invalid job function selected.",
+            });
+            return;
+        }
+
+        const company = await Company.query().findById(companyId);
+
+        if (!company) {
+            res.status(400).json({
+                type: "body",
+                message: "Invalid company selected.",
             });
             return;
         }
@@ -125,7 +137,7 @@ export default class JobController {
             return;
         }
 
-        const { employmentTypeId, skillIds, levelId, jobFunctionId } = req.body;
+        const { companyId, employmentTypeId, skillIds, levelId, jobFunctionId } = req.body;
         const uniqSkillIds = uniq(skillIds);
         const employmentType = await EmploymentType.query().findById(employmentTypeId);
 
@@ -163,6 +175,16 @@ export default class JobController {
             res.status(400).json({
                 type: "body",
                 message: "Invalid job function selected.",
+            });
+            return;
+        }
+
+        const company = await Company.query().findById(companyId);
+
+        if (!company) {
+            res.status(400).json({
+                type: "body",
+                message: "Invalid company selected.",
             });
             return;
         }

@@ -9,33 +9,40 @@ export async function up(knex: Knex): Promise<void> {
             table.timestamp("created_at").nullable();
             table.timestamp("updated_at").nullable();
         })
+        .createTable("companies", table => {
+            table.increments("id").primary().unsigned();
+            table.string("name", 255).notNullable().unique();
+            table.timestamp("created_at").nullable();
+            table.timestamp("updated_at").nullable();
+        })
         .createTable("employment_types", table => {
             table.increments("id").primary().unsigned();
-            table.string("name", 255).notNullable();
+            table.string("name", 255).notNullable().unique();
             table.timestamp("created_at").nullable();
             table.timestamp("updated_at").nullable();
         })
         .createTable("levels", table => {
             table.increments("id").primary().unsigned();
-            table.string("name", 255).notNullable();
+            table.string("name", 255).notNullable().unique();
             table.timestamp("created_at").nullable();
             table.timestamp("updated_at").nullable();
         })
         .createTable("skills", table => {
             table.increments("id").primary().unsigned();
-            table.string("name", 255).notNullable();
+            table.string("name", 255).notNullable().unique();
             table.timestamp("created_at").nullable();
             table.timestamp("updated_at").nullable();
         })
         .createTable("job_functions", table => {
             table.increments("id").primary().unsigned();
-            table.string("name", 255).notNullable();
+            table.string("name", 255).notNullable().unique();
             table.timestamp("created_at").nullable();
             table.timestamp("updated_at").nullable();
         })
         .createTable("jobs", table => {
             table.increments("id").primary().unsigned();
             table.integer("creator_id").notNullable().unsigned();
+            table.integer("company_id").notNullable().unsigned();
             table.integer("employment_type_id").notNullable().unsigned();
             table.integer("level_id").notNullable().unsigned();
             table.integer("job_function_id").notNullable().unsigned();
@@ -47,6 +54,7 @@ export async function up(knex: Knex): Promise<void> {
             table.timestamp("updated_at").nullable();
 
             table.foreign("creator_id").references("users.id");
+            table.foreign("company_id").references("companies.id");
             table.foreign("employment_type_id").references("employment_types.id");
             table.foreign("level_id").references("levels.id");
             table.foreign("job_function_id").references("job_functions.id");
@@ -92,6 +100,7 @@ export async function down(knex: Knex): Promise<void> {
     const jobFunctionsExists = await schemaBuilder.hasTable("job_functions")
     const skillsExists = await schemaBuilder.hasTable("skills")
     const employmentTypesExists = await schemaBuilder.hasTable("employment_types")
+    const companiesExists = await schemaBuilder.hasTable("companies")
     const levelsExists = await schemaBuilder.hasTable("levels")
     const usersExists = await schemaBuilder.hasTable("users")
     const jobAppExists = await schemaBuilder.hasTable("job_applications")
@@ -133,6 +142,10 @@ export async function down(knex: Knex): Promise<void> {
 
     if (employmentTypesExists) {
         schemaBuilder.dropTable("employment_types");
+    }
+
+    if (companiesExists) {
+        schemaBuilder.dropTable("companies");
     }
 
     if (levelsExists) {

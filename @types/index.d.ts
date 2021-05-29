@@ -27,16 +27,17 @@ export interface Job {
     descEditorContent?: RawDraftContentState
 }
 
-export interface ListJobResponseSchema extends Omit<JobModel, "description" | "level" | "employmentType"> {}
+export interface ListJobResponseSchema extends Omit<JobModel, "description" | "level" | "employmentType"> { }
 
 export interface ListJobsResponseSchema {
     results: Omit<JobModel, "description" | "level" | "employmentType">[],
     total: number,
- }
+}
 
 export interface GetJobResponseSchema extends Omit<JobModel, "createdAt" | "updatedAt" | "employmentType" | "level" | "jobFunction"> {
     createdAt: string,
     updatedAt: string
+    company: Company
     employmentType: EmploymentType
     level: Level,
     skills: Skill[],
@@ -108,6 +109,13 @@ export interface EmploymentType {
     name: string,
 }
 
+export interface Company {
+    id: number,
+    name: string,
+    createdAt: string,
+    updatedAt: string,
+}
+
 export interface EmploymentTypeModel extends ModelBase, EmploymentType { }
 
 export interface Level {
@@ -149,6 +157,7 @@ export type UserContext = {
 export type JobFormFieldValues = {
     title: string,
     location: string,
+    company: Company | null,
     employmentType: EmploymentType | null,
     level: Level | null,
     jobFunction: JobFunction,
@@ -199,19 +208,19 @@ export enum ContainerTypes {
     Headers = 'headers',
     Fields = 'fields',
     Params = 'params'
-  }
-
-export interface ValidatedAuthRequest<T extends ValidatedRequestSchema>
-  extends NextApiAuthRequest {
-  body: T[ContainerTypes.Body]
-  query: T[ContainerTypes.Query]
-  headers: T[ContainerTypes.Headers]
-  params: T[ContainerTypes.Params]
 }
 
-export interface ValidatedRequest<T extends ValidatedRequestSchema> extends Omit<ValidatedAuthRequest, "user"> {}
+export interface ValidatedAuthRequest<T extends ValidatedRequestSchema>
+    extends NextApiAuthRequest {
+    body: T[ContainerTypes.Body]
+    query: T[ContainerTypes.Query]
+    headers: T[ContainerTypes.Headers]
+    params: T[ContainerTypes.Params]
+}
 
-export interface ValidatedRequestWithFiles<T extends ValidatedRequestSchema> extends Omit<ValidatedRequest, "user">, NextApiRequestWithFiles  {}
+export interface ValidatedRequest<T extends ValidatedRequestSchema> extends Omit<ValidatedAuthRequest, "user"> { }
+
+export interface ValidatedRequestWithFiles<T extends ValidatedRequestSchema> extends Omit<ValidatedRequest, "user">, NextApiRequestWithFiles { }
 
 export interface NextApiRequestWithFiles extends NextApiRequest {
     file: File | File[]
@@ -222,6 +231,7 @@ export interface SaveJobRequestSchema extends ValidatedRequestSchema {
     [ContainerTypes.Body]: {
         title: string,
         location: string,
+        companyId: number,
         employmentTypeId: number,
         levelId: number,
         jobFunctionId: number,
