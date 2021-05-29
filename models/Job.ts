@@ -1,5 +1,5 @@
 import { RawDraftContentState } from "draft-js";
-import { SaveJobRequestSchema, ValidatedAuthRequest } from "../@types";
+import { SaveJobRequestBody, SaveJobRequestSchema, ValidatedAuthRequest } from "../@types";
 import Company from "./Company";
 import EmploymentType from "./EmploymentType";
 import JobFunction from "./JobFunction";
@@ -39,9 +39,15 @@ export default class Job extends Model {
         return nonEmptyBlockTexts.join(" ");
     }
 
-    static populateViaPostReq(req: ValidatedAuthRequest<SaveJobRequestSchema>): Job {
-        const { title, location, description, companyId, employmentTypeId, levelId, jobFunctionId } = req.body;
-
+    static populateViaPostReqBody({
+        title,
+        location,
+        description,
+        companyId,
+        employmentTypeId,
+        levelId,
+        jobFunctionId
+    }: SaveJobRequestBody): Job {
         const job = new Job();
         job.title = title;
         job.location = location;
@@ -50,14 +56,19 @@ export default class Job extends Model {
         job.employmentTypeId = employmentTypeId;
         job.levelId = levelId
         job.jobFunctionId = jobFunctionId;
-        job.creatorId = req.user.id;
 
         return job;
     }
 
-    populateViaPutReq(req: ValidatedAuthRequest<SaveJobRequestSchema>): Job {
-        const { title, location, companyId, employmentTypeId, description, levelId, jobFunctionId } = req.body;
-
+    populateViaPutReqBody({
+        title,
+        location,
+        description,
+        companyId,
+        employmentTypeId,
+        levelId,
+        jobFunctionId
+    }: SaveJobRequestBody): Job {
         if (this.employmentTypeId != employmentTypeId) {
             this.employmentTypeId = employmentTypeId;
         }

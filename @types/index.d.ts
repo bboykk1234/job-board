@@ -227,17 +227,19 @@ export interface NextApiRequestWithFiles extends NextApiRequest {
     files: Files
 }
 
+export interface SaveJobRequestBody {
+    title: string,
+    location: string,
+    companyId: number,
+    employmentTypeId: number,
+    levelId: number,
+    jobFunctionId: number,
+    skillIds: number[],
+    description: string,
+}
+
 export interface SaveJobRequestSchema extends ValidatedRequestSchema {
-    [ContainerTypes.Body]: {
-        title: string,
-        location: string,
-        companyId: number,
-        employmentTypeId: number,
-        levelId: number,
-        jobFunctionId: number,
-        skillIds: number[],
-        description: string,
-    }
+    [ContainerTypes.Body]: SaveJobRequestBody
 }
 
 export interface validationOptions extends Options {
