@@ -94,10 +94,11 @@ export default class JobEsRepository {
         jobFunctionIds,
         skillIds,
         companyIds,
-        from = 0,
+        page = 1,
         size = 25,
-    }: { search?: string, employmentTypeIds?: string, levelIds?: string, jobFunctionIds?: string, skillIds?: string, companyIds?: string, from?: number, size?: number }): Promise<{ ids: string[], total: number }> {
+    }: { search?: string, employmentTypeIds?: string, levelIds?: string, jobFunctionIds?: string, skillIds?: string, companyIds?: string, page?: number, size?: number }): Promise<{ ids: string[], total: number }> {
         return new Promise(async (resolve) => {
+            const from = (page - 1) * size
             let query: { bool: { [key: string]: object | object[] } } = {
                 bool: {
                     must: {

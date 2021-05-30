@@ -34,15 +34,16 @@ export default class JobApplicationEsRepository {
     static async search({
         jobId,
         search,
-        from = 0,
+        page = 1,
         size = 25,
     }: {
         jobId?: string,
         search?: string,
-        from?: number,
+        page?: number,
         size?: number,
     }): Promise<{ ids: string[], total: number }> {
         return new Promise(async (resolve) => {
+            const from = (page - 1) * size
             let query: { bool: { [key: string]: object } } = {
                 bool: {
                     must: {

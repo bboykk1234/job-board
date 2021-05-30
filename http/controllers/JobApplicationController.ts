@@ -11,9 +11,7 @@ import JobApplicationEsRepository from "../../repositories/JobApplicationEsRepos
 
 export default class JobApplicationController {
     static async index(req: NextApiRequest, res: NextApiResponse, next: NextHandler) {
-        const { jobId, search } = req.query as { jobId?: string, search?: string };
-
-        const { ids: jobApplicationIds, total } = await JobApplicationEsRepository.search({ jobId, search })
+        const { ids: jobApplicationIds, total } = await JobApplicationEsRepository.search(req.query)
         const jobApplications = await JobApplication.query()
             .whereIn("id", jobApplicationIds)
             .withGraphFetched("job(selectAllExceptDesc).[skills]")
