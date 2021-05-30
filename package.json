@@ -9,6 +9,8 @@
         "knex": "ts-node --transpile-only ./node_modules/.bin/knex",
         "migration:make": "knex migrate:make",
         "migration:rollback": "yarn knex migrate:rollback",
+        "es:indices:up": "ts-node ./es-cli.ts indices:up",
+        "es:indices:drop": "ts-node ./es-cli.ts indices:drop",
         "migration:up": "yarn knex migrate:up",
         "migration:list": "knex migrate:list",
         "seed:make": "knex seed:make",

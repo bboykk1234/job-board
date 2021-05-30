@@ -70,6 +70,12 @@ export default class JobController {
             )
         const job = await Job.query()
             .findById(req.params.id)
+            .withGraphFetched({
+              employmentType: true,
+              level: true,
+              jobFunction: true,
+              skills: true,
+          });
 
         const esRes = await JobEsRepository.update(job)
 

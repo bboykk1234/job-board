@@ -1,5 +1,5 @@
 import { difference, intersection, uniq } from "lodash";
-import { SaveJobRequestBody, User } from "../@types";
+import { SaveJobRequestBody, UserResponseModel } from "../@types";
 import ModelNotFoundError from "../exceptions/ModelNotFoundError";
 import Company from "../models/Company";
 import EmploymentType from "../models/EmploymentType";
@@ -10,7 +10,7 @@ import Level from "../models/Level";
 import Skill from "../models/Skill";
 
 export default class JobRepository {
-    static async createBasedOnReqBody(user: User, body: SaveJobRequestBody): Promise<Job> {
+    static async createBasedOnReqBody(user: UserResponseModel, body: SaveJobRequestBody): Promise<Job> {
         return new Promise(async (resolve, reject) => {
             try {
                 const {
@@ -43,7 +43,7 @@ export default class JobRepository {
         })
     }
 
-    static async updateBasedOnReqBody(id: number, user: User, body: SaveJobRequestBody): Promise<Job> {
+    static async updateBasedOnReqBody(id: number, user: UserResponseModel, body: SaveJobRequestBody): Promise<Job> {
         return new Promise(async (resolve, reject) => {
             try {
                 let job = await Job.query()

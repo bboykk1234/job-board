@@ -39,3 +39,14 @@ code {
 .fs-7 {
     font-size: 0.75rem !important;
 }
+
+.rounded-start-0 {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.rounded-end-0,
+.phone-code-select__control {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}

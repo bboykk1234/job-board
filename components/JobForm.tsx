@@ -1,5 +1,5 @@
 import { convertFromRaw, RawDraftContentState } from "draft-js";
-import { JobFormFieldValues, Skill, GetJobResponseSchema } from "../@types";
+import { JobFormFieldValues, SkillResponseModel, GetJobResponseSchema } from "../@types";
 import { useForm, Controller } from "react-hook-form";
 import AsyncSelect from 'react-select/async';
 import axios, { AxiosResponse } from "axios";
@@ -111,7 +111,7 @@ export default function JobForm() {
     }
 
     function loadSkillList(input: string) {
-        return axios.get<Skill[]>("skills", { params: { search: input } })
+        return axios.get<SkillResponseModel[]>("skills", { params: { search: input } })
             .then(data => data.data);
     }
 

@@ -12,61 +12,66 @@ import JobFunctionController from "../../http/controllers/JobFunctionController"
 import SaveJobRequestRules from "../../http/requests/SaveJobRequestRules"
 import handler from "../../extensions/RouteHandler";
 import validate from "../../extensions/RequestValidator";
-import JobApplicationController from "../../http/controllers/JobApplicationController";
 import CompanyController from "../../http/controllers/CompanyController";
+import CountryController from "../../http/controllers/CountryController";
+import JobApplicationController from "../../http/controllers/JobApplicationController";
 
 const knex = Knex(knexConfig);
 
 Model.knex(knex)
 
 type UserApiRequest = {
-    params: {
-        userId: string
-    },
-    login(user: {}, options: any, done: (err: any) => void): void;
+  params: {
+    userId: string
+  },
+  login(user: {}, options: any, done: (err: any) => void): void;
 }
 
 handler
-    .post<UserApiRequest>("/api/auth/login", AuthController.login)
-    .get("/api/auth/users", passport.authenticate("jwt", { session: false }), AuthController.getUser)
+  .post<UserApiRequest>("/api/auth/login", AuthController.login)
+  .get("/api/auth/users", passport.authenticate("jwt", { session: false }), AuthController.getUser)
 
 handler
-    .get("/api/jobs", JobController.index)
-    .get("/api/jobs/:id", JobController.show)
-    .post("/api/jobs",
-        passport.authenticate("jwt", { session: false }),
-        validate({ body: SaveJobRequestRules }),
-        JobController.create
-    )
-    .put("/api/jobs/:id",
-        passport.authenticate("jwt", { session: false }),
-        validate({ body: SaveJobRequestRules }),
-        JobController.update
-    )
-    .post("/api/jobs/:id/close",
-        passport.authenticate("jwt", { session: false }),
-        JobController.close
-    )
+  .post("/api/jobs/:id/close",
+    passport.authenticate("jwt", { session: false }),
+    JobController.close
+  )
+  .get("/api/jobs/:id", JobController.show)
+  .put("/api/jobs/:id",
+    passport.authenticate("jwt", { session: false }),
+    validate({ body: SaveJobRequestRules }),
+    JobController.update
+  )
+  .post("/api/jobs",
+    passport.authenticate("jwt", { session: false }),
+    validate({ body: SaveJobRequestRules }),
+    JobController.create
+  )
+  .get("/api/jobs", JobController.index)
 
 handler
-    .get("/api/companies", CompanyController.index)
+  .get("/api/companies", CompanyController.index)
 
 handler
-    .get("/api/employment_types", EmploymentTypeController.index)
+  .get("/api/employment_types", EmploymentTypeController.index)
 
 handler
-    .get("/api/skills", SkillController.index)
+  .get("/api/countries", CountryController.index)
 
 handler
-    .get("/api/levels", LevelController.index)
+  .get("/api/skills", SkillController.index)
 
 handler
-    .get("/api/job_functions", JobFunctionController.index)
+  .get("/api/levels", LevelController.index)
 
 handler
-    .get("/api/job_applications/:id/resume",
-        passport.authenticate("jwt", { session: false }),
-        JobApplicationController.download
-    )
+  .get("/api/job_functions", JobFunctionController.index)
+
+handler
+  .get(
+    "/api/resume/download",
+    passport.authenticate("jwt", { session: false }),
+    JobApplicationController.download
+  )
 
 export default handler;

@@ -1,5 +1,5 @@
 import { RawDraftContentState } from "draft-js";
-import { SaveJobRequestBody, SaveJobRequestSchema, ValidatedAuthRequest } from "../@types";
+import { SaveJobRequestBody } from "../@types";
 import Company from "./Company";
 import EmploymentType from "./EmploymentType";
 import JobApplication from "./JobApplication";
@@ -21,6 +21,7 @@ export default class Job extends Model {
     jobFunctionId!: number
     closedAt!: Date | null
 
+    creator?: User
     skills?: Skill[]
     employmentType?: EmploymentType
     level?: Level
@@ -30,12 +31,14 @@ export default class Job extends Model {
 
     static tableName = "jobs"
 
-    getDescriptionPlainText(): string {
-        if (!this.description) {
+    static getDescriptionPlainText(job: Job): string {
+      console.log("closing");
+
+        if (!job.description) {
             return "";
         }
 
-        const { blocks = [] } = JSON.parse(this.description) as RawDraftContentState;
+        const { blocks = [] } = JSON.parse(job.description) as RawDraftContentState;
         const nonEmptyBlockTexts = blocks.map(block => block?.text?.trim().toLowerCase() || "")
             .filter(text => text != "");
 

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { EmploymentType, JobFormFieldValues } from "../@types";
+import { EmploymentTypeResponseModel, JobFormFieldValues } from "../@types";
 import { Controller, Control, UseFormSetValue, UseFormGetValues } from "react-hook-form";
 import axios from "axios";
 import Select from "react-select";
 
 const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: UseFormSetValue<JobFormFieldValues>, getValues: UseFormGetValues<JobFormFieldValues> }> = ({ control, setValue, getValues }) => {
-    const [employmentTypes, setEmploymentTypes] = useState<EmploymentType[]>([]);
+    const [employmentTypes, setEmploymentTypes] = useState<EmploymentTypeResponseModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function loadEmploymentTypes() {
             try {
-                const { data } = await axios.get<EmploymentType[]>("/employment_types");
+                const { data } = await axios.get<EmploymentTypeResponseModel[]>("/employment_types");
                 setEmploymentTypes(data);
                 setIsLoading(false);
             } catch (err) {
@@ -54,7 +54,7 @@ const EmploymentTypeSelect: React.FC<{ control: Control<JobFormFieldValues>, set
                                 placeholder="Type to filter"
                                 onChange={value => {
                                     const levelValue = getValues("level");
-                                    const { name } = value as EmploymentType;
+                                    const { name } = value as EmploymentTypeResponseModel;
                                     onChange(value)
                                     if (name === "Internship") {
                                         setValue("level", {
