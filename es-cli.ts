@@ -9,46 +9,53 @@ async function createIndex() {
     const jobIndexExistsRes = await client.indices.exists({ index: "jobs" })
 
     if (!jobIndexExistsRes.body) {
-        const jobIndexCreateRes = await client.indices.create({
-            index: "jobs",
-            include_type_name: true,
-            body: {
-                settings: {
-                    number_of_shards: 1
-                },
-                mappings: {
-                    _doc: {
-                        properties: {
-                            employment_type_id: {
-                                type: "long"
-                            },
-                            level_id: {
-                                type: "long"
-                            },
-                            job_function_id: {
-                                type: "long"
-                            },
-                            company_id: {
-                                type: "long"
-                            },
-                            skill_ids: {
-                                type: "long"
-                            },
-                            keywords: {
-                                type: "text",
-                                analyzer: "standard"
-                            },
-                            closed_at: {
-                                type: "date",
-                                null_value: "1970-01-01T00:00:00Z",
+        try {
+            const jobIndexCreateRes = await client.indices.create({
+                index: "jobs",
+                include_type_name: true,
+                body: {
+                    settings: {
+                        number_of_shards: 1
+                    },
+                    mappings: {
+                        _doc: {
+                            dynamic: "strict",
+                            properties: {
+                                employment_type_id: {
+                                    type: "long"
+                                },
+                                level_id: {
+                                    type: "long"
+                                },
+                                job_function_id: {
+                                    type: "long"
+                                },
+                                company_id: {
+                                    type: "long"
+                                },
+                                skill_ids: {
+                                    type: "long"
+                                },
+                                keywords: {
+                                    type: "text",
+                                    analyzer: "standard"
+                                },
+                                closed_at: {
+                                    type: "date",
+                                    null_value: "1970-01-01T00:00:00Z",
+                                }
                             }
                         }
                     }
                 }
-            }
-        })
+            })
 
-        console.log(jobIndexCreateRes)
+            console.log(jobIndexCreateRes)
+        } catch (err) {
+            console.log(err.meta.body.error)
+            console.log(err.meta.meta.request)
+            throw err
+        }
     }
 
     const jobAppIndexExistsRes = await client.indices.exists({ index: "job_applications" })
@@ -63,6 +70,7 @@ async function createIndex() {
                 },
                 mappings: {
                     _doc: {
+                        dynamic: "strict",
                         properties: {
                             job_id: {
                                 type: "long"
@@ -114,6 +122,7 @@ async function createIndex() {
                 },
                 mappings: {
                     _doc: {
+                        dynamic: "strict",
                         properties: {
                             name: {
                                 type: "text",

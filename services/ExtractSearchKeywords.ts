@@ -12,22 +12,23 @@ export const extractForJobApplication = async (jobApplication: JobApplication) =
     const email = jobApplication.email.trim().toLowerCase();
     const phoneNumber = jobApplication.phoneNumber.trim().toLowerCase();
 
-    const job = await Job.query()
-        .findById(jobApplication.jobId)
-        .withGraphFetched({
-            employmentType: true,
-            level: true,
-            jobFunction: true,
-            skills: true,
-        });
-
-    if (!job) {
-        throw new Error("Missing job for application");
+    if (!jobApplication.job) {
+        const job = await Job.query()
+            .findById(jobApplication.jobId)
+            .withGraphFetched({
+                employmentType: true,
+                level: true,
+                jobFunction: true,
+                skills: true,
+            });
+        jobApplication.job = job
     }
 
+    const job = jobApplication.job;
     const employmentType = job.employmentType;
     const level = job.level;
     const jobFunction = job.jobFunction;
+    const skills = job.skills;
     const jobDescPlaintext = job.getDescriptionPlainText();
 
     if (!employmentType) {
@@ -42,7 +43,11 @@ export const extractForJobApplication = async (jobApplication: JobApplication) =
         throw new Error("Missing job function for job");
     }
 
-    const skillNames = job.skills?.map(skill => skill.name.trim().toLowerCase())
+    if (!skills) {
+        throw new Error("Missing job function for job");
+    }
+
+    const skillNames = skills.map(skill => skill.name.trim().toLowerCase())
         .join(" ") || "";
 
     const typeName = employmentType.name.trim().toLowerCase();

@@ -17,6 +17,20 @@ export default class JobApplicationEsRepository {
         })
     }
 
+    static async updateBulk(jobApplications: JobApplication[]) {
+        let body = []
+        for (const jobApplication of jobApplications) {
+            body.push({
+                index: { _index: this.indexName, _type: "_doc", _id: jobApplication.id }
+            })
+            body.push({ doc: { keywords: await extractForJobApplication(jobApplication) } })
+        }
+
+        console.log(body)
+
+        return ElasticsearchClient.bulk({ body })
+    }
+
     static async search({
         jobId,
         search,

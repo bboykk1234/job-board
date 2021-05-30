@@ -58,7 +58,7 @@ export default class JobRepository {
                     throw new ModelNotFoundError(404, "Job not found.")
                 }
 
-                await this.findRequiredModelsBasedOnReqBody(body)
+                const requiredModels = await this.findRequiredModelsBasedOnReqBody(body)
 
                 if (!job.skills) {
                     const skills = await Job.relatedQuery("skills")
@@ -105,6 +105,10 @@ export default class JobRepository {
                         skillsWithoutDeletedSkills = skillsWithoutDeletedSkills.filter(skill => !skillIdsShouldDelete.includes(skill.id)) || []
                     }
 
+                    job.employmentType = requiredModels.employmentType
+                    job.level = requiredModels.level
+                    job.jobFunction = requiredModels.jobFunction
+                    job.company = requiredModels.company
                     job.skills = [
                         ...newSkills,
                         ...skillsWithoutDeletedSkills

@@ -2,6 +2,7 @@ import { RawDraftContentState } from "draft-js";
 import { SaveJobRequestBody, SaveJobRequestSchema, ValidatedAuthRequest } from "../@types";
 import Company from "./Company";
 import EmploymentType from "./EmploymentType";
+import JobApplication from "./JobApplication";
 import JobFunction from "./JobFunction";
 import JobSkill from "./JobSkill";
 import Level from "./Level";
@@ -24,6 +25,8 @@ export default class Job extends Model {
     employmentType?: EmploymentType
     level?: Level
     jobFunction?: JobFunction
+    company?: Company
+    jobApplications?: JobApplication[]
 
     static tableName = "jobs"
 
@@ -194,6 +197,14 @@ export default class Job extends Model {
                         to: `${JobSkill.tableName}.skill_id`
                     },
                     to: `${Skill.tableName}.id`
+                }
+            },
+            jobApplications: {
+                relation: Model.HasManyRelation,
+                modelClass: JobApplication,
+                join: {
+                    from: `${Job.tableName}.id`,
+                    to: `${JobApplication.tableName}.job_id`
                 }
             }
         }

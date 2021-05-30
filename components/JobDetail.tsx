@@ -29,8 +29,10 @@ export default function JobDetail() {
         async function loadJob(jobId: number) {
             try {
                 const { data } = await axios.get<any, AxiosResponse<GetJobResponseSchema>>(`/jobs/${jobId}`);
-                const descEditorContent = JSON.parse(data.description) as RawDraftContentState;
-                if (mounted) {
+                if (mounted && data) {
+                    const descEditorContent = (data.description
+                        ? JSON.parse(data.description)
+                        : { blocks: [], entityMap: {} }) as RawDraftContentState;
                     setJob({
                         ...data,
                         descEditorContent

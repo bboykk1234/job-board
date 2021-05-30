@@ -3,24 +3,24 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import FormContainer from "./FormContainer";
 import Link from "./Link";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import FormFieldErrorMessage from "./FormFieldErrorMessage";
 import { ErrorMessage } from "@hookform/error-message";
 import { useRouter } from "next/router";
 
-export default function JobApplicationForm() {
-    const router = useRouter();
+const JobApplicationForm: React.FC<{ query: { id?: string } }> = ({ query }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm<JobApplicationFormFieldValues>({
         mode: "onBlur"
     });
-    const { id: jobId } = router.query;
+    const router = useRouter();
+    const { id: jobId } = query;
 
     useEffect(() => {
         if (!jobId) {
             console.log("Job id is missing");
         }
-    }, [])
+    }, [jobId])
 
     async function onSubmit(values: JobApplicationFormFieldValues) {
         setIsSubmitting(true);
@@ -201,3 +201,5 @@ export default function JobApplicationForm() {
         </FormContainer>
     );
 }
+
+export default JobApplicationForm

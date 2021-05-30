@@ -14,6 +14,8 @@ export default class JobApplication extends Model {
     postalCode!: string
     country!: string
 
+    job?: Job
+
     static tableName = "job_applications"
 
     get name() {
