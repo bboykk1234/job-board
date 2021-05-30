@@ -31,14 +31,12 @@ export default class Job extends Model {
 
     static tableName = "jobs"
 
-    static getDescriptionPlainText(job: Job): string {
-      console.log("closing");
-
-        if (!job.description) {
+    getDescriptionPlainText(): string {
+        if (!this.description) {
             return "";
         }
 
-        const { blocks = [] } = JSON.parse(job.description) as RawDraftContentState;
+        const { blocks = [] } = JSON.parse(this.description) as RawDraftContentState;
         const nonEmptyBlockTexts = blocks.map(block => block?.text?.trim().toLowerCase() || "")
             .filter(text => text != "");
 

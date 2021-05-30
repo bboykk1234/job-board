@@ -25,16 +25,16 @@ export default class JobApplicationEsRepository {
 
         for (const jobApplication of jobApplications) {
           body.push({
-            index: { _index: this.indexName, _type: "_doc", _id: jobApplication.id }
+            update: { _index: this.indexName, _type: "_doc", _id: jobApplication.id }
           })
           const keywords = await extractForJobApplication(jobApplication)
 
           body.push({ doc: { keywords } })
         }
-        const res = ElasticsearchClient.bulk({ body })
+
+        const res = await ElasticsearchClient.bulk({ body })
         resolve(res)
       } catch (err) {
-        console.log(err);
         reject(err)
       }
     })

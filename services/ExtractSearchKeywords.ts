@@ -1,12 +1,7 @@
 import keywordExtractor from "keyword-extractor";
 import { uniq } from "lodash";
-import Country from "../models/Country";
-import EmploymentType from "../models/EmploymentType";
 import Job from "../models/Job";
 import JobApplication from "../models/JobApplication";
-import JobFunction from "../models/JobFunction";
-import Level from "../models/Level";
-import Skill from "../models/Skill";
 
 export const extractForJobApplication = async (jobApplication: JobApplication) => {
   const name = jobApplication.name.trim().toLowerCase();
@@ -15,8 +10,6 @@ export const extractForJobApplication = async (jobApplication: JobApplication) =
   const city = jobApplication.city.trim().toLowerCase();
   const email = jobApplication.email.trim().toLowerCase();
   const phoneNumber = jobApplication.phoneNumber.trim().toLowerCase();
-
-  // console.log(jobApplication.job);
 
   if (!jobApplication.job) {
     const job = await Job.query()
@@ -30,6 +23,11 @@ export const extractForJobApplication = async (jobApplication: JobApplication) =
     jobApplication.job = job
   }
 
+  if (!jobApplication.country) {
+    const country = await jobApplication.$relatedQuery("country")
+      .first()
+    jobApplication.country = country
+  }
 
   const job = jobApplication.job;
   const country = jobApplication.country;
@@ -37,7 +35,7 @@ export const extractForJobApplication = async (jobApplication: JobApplication) =
   const level = job.level;
   const jobFunction = job.jobFunction;
   const skills = job.skills || [];
-  const jobDescPlaintext = Job.getDescriptionPlainText(job);
+  const jobDescPlaintext = job.getDescriptionPlainText();
 
   if (!employmentType) {
     throw new Error("Missing employee type for job");
@@ -95,7 +93,7 @@ export const extractForJobApplication = async (jobApplication: JobApplication) =
 export const extractForJob = async (job: Job) => {
   const title = job.title.trim().toLowerCase();
   const location = job.location.trim().toLowerCase();
-  const jobDescPlaintext = Job.getDescriptionPlainText(job);
+  const jobDescPlaintext = job.getDescriptionPlainText();
 
   if (!job.employmentType) {
     const employmentType = await job.$relatedQuery("employmentType").first()

@@ -41,11 +41,8 @@ export default class JobEsRepository {
         if (!job.jobApplications) {
           const jobApplications = await JobApplication.query()
             .where("job_id", job.id)
-            .withGraphFetched({
-              country: true,
-            })
           job.jobApplications = jobApplications.map(jobApplication => {
-            jobApplication.job = { ...job } as Job
+            jobApplication.job = job
             return jobApplication
           })
         }

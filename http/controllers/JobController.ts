@@ -76,6 +76,7 @@ export default class JobController {
               jobFunction: true,
               skills: true,
           });
+        job.closedAt = new Date()
 
         const esRes = await JobEsRepository.update(job)
 

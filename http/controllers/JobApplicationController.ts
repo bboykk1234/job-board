@@ -30,6 +30,7 @@ export default class JobApplicationController {
         type: "file",
         message: "Missing resume file",
       });
+      return
     }
 
     const resumeFileType = await FileType.fromFile(file.path);
@@ -39,6 +40,7 @@ export default class JobApplicationController {
         type: "file",
         message: "Uploaded resume is not PDF",
       });
+      return
     }
 
     const { jobId } = req.body;
