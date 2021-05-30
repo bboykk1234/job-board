@@ -24,7 +24,7 @@ export default class JobEsRepository {
                 company_id: job.companyId,
                 keywords: await extractForJob(job),
                 skill_ids: job.skills.map(skill => skill.id),
-                closed_at: job.closedAt,
+                closed_at: job.closedAt ? job.closedAt.toISOString() : null,
             }
         })
     }
@@ -45,7 +45,6 @@ export default class JobEsRepository {
                         jobApplication.job = job
                         return jobApplication
                     })
-
                 }
 
                 try {
@@ -75,7 +74,7 @@ export default class JobEsRepository {
                             company_id: job.companyId,
                             keywords: await extractForJob(job),
                             skill_ids: job.skills.map(skill => skill.id),
-                            closed_at: job.closedAt,
+                            closed_at: job.closedAt ? job.closedAt.toISOString() : null,
                         }
                     }
                 })
