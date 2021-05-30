@@ -29,7 +29,7 @@ export default class JobEsRepository {
         })
     }
 
-    static async update(job: Job) {
+    static async update(job: Job): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             try {
                 if (!job.skills) {

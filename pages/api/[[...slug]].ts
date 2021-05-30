@@ -64,6 +64,9 @@ handler
     .get("/api/job_functions", JobFunctionController.index)
 
 handler
-    .get("/api/job_applications/:id/resume", JobApplicationController.download)
+    .get("/api/job_applications/:id/resume",
+        passport.authenticate("jwt", { session: false }),
+        JobApplicationController.download
+    )
 
 export default handler;

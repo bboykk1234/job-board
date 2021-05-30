@@ -41,8 +41,9 @@ passport.use(
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         },
         async (token, done) => {
+            console.log(token)
             try {
-                return done(null, token.user);
+                done(null, token.user);
             } catch (error) {
                 done(error);
             }

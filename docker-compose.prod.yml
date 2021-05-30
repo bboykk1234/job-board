@@ -15,6 +15,8 @@ services:
       - app-network
     depends_on:
       - mysql
+      - es-master
+      - es-data-1
   mysql:
     build:
       context: ./docker/mysql
@@ -27,8 +29,41 @@ services:
       - '3306'
     networks:
       - app-network
+  es-master:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.16
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    networks:
+      - app-network
+  es-data-1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.16
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=es-master"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - app-network
+    depends_on:
+      - es-master
 networks:
   app-network:
     driver: bridge
 volumes:
   dbdata:
+  esdata1:
+  esdata2:

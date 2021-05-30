@@ -24,6 +24,15 @@ axios.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+axios.interceptors.response.use((response) => {
+    return response
+  }, async function (error) {
+    if (error.response.status === 401) {
+        window.location.replace("/");
+    }
+    return Promise.reject(error);
+  });
+
 axios.defaults.baseURL = "/api/";
 
 function MyApp({ Component, pageProps }: AppProps) {

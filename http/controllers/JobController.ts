@@ -73,10 +73,6 @@ export default class JobController {
 
         const esRes = await JobEsRepository.update(job)
 
-        if (esRes.body.result != "updated") {
-            console.log(esRes)
-        }
-
         res.json({
             status: affected && affected >= 0,
         });
