@@ -9,6 +9,8 @@ services:
     ports:
       - "3000:${PORT:-3000}"
     command: sh -c "dockerize -wait tcp://mysql:3306 -timeout 300s -wait-retry-interval 5s yarn start"
+    volumes:
+      - ./storage:/usr/src/app/storage
     networks:
       - app-network
     depends_on:

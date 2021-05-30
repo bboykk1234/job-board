@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { JobFormFieldValues, JobFunction } from "../@types";
+import { JobFormFieldValues, JobFunctionResponseModel } from "../@types";
 import { Control, Controller } from "react-hook-form";
 import axios from "axios";
 import Select from "react-select";
 
 const JobFunctionSelect: React.FC<{ control: Control<JobFormFieldValues> }> = ({ control }) => {
-    const [jobFunctions, setJobFunctions] = useState<JobFunction[]>([]);
+    const [jobFunctions, setJobFunctions] = useState<JobFunctionResponseModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function loadJobFunctions() {
             try {
-                const { data } = await axios.get<JobFunction[]>("/job_functions");
+                const { data } = await axios.get<JobFunctionResponseModel[]>("/job_functions");
                 setJobFunctions(data);
                 setIsLoading(false);
             } catch (err) {

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Company, JobFormFieldValues } from "../@types";
+import { CompanyResponseModel, JobFormFieldValues } from "../@types";
 import { Controller, Control } from "react-hook-form";
 import axios from "axios";
 import Select from "react-select";
 
 const CompanySelect: React.FC<{ control: Control<JobFormFieldValues> }> = ({ control}) => {
-    const [companies, setCompanies] = useState<Company[]>([]);
+    const [companies, setCompanies] = useState<CompanyResponseModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function loadCompanies() {
             try {
-                const { data } = await axios.get<Company[]>("/companies");
+                const { data } = await axios.get<CompanyResponseModel[]>("/companies");
                 setCompanies(data);
                 setIsLoading(false);
             } catch (err) {

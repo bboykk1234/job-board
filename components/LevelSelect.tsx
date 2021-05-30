@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { JobFormFieldValues, Level } from "../@types";
+import { JobFormFieldValues, LevelResponseModel } from "../@types";
 import { Controller, Control, UseFormSetValue, UseFormGetValues } from "react-hook-form";
 import axios from "axios";
 import Select from "react-select";
 
 const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: UseFormSetValue<JobFormFieldValues>, getValues: UseFormGetValues<JobFormFieldValues> }> = ({ control, setValue, getValues }) => {
-    const [levels, setLevels] = useState<Level[]>([]);
+    const [levels, setLevels] = useState<LevelResponseModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         async function loadLevels() {
             try {
-                const { data } = await axios.get<Level[]>("/levels");
+                const { data } = await axios.get<LevelResponseModel[]>("/levels");
                 setLevels(data);
                 setIsLoading(false);
             } catch (err) {
@@ -54,7 +54,7 @@ const LevelSelect: React.FC<{ control: Control<JobFormFieldValues>, setValue: Us
                                 placeholder="Type to filter"
                                 onChange={value => {
                                     const typeValue = getValues("employmentType");
-                                    const { name } = value as Level;
+                                    const { name } = value as LevelResponseModel;
                                     onChange(value)
                                     if (name === "Internship") {
                                         setValue("employmentType", {

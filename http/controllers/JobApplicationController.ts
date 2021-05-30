@@ -92,8 +92,7 @@ export default class JobApplicationController {
       return;
     }
 
-    const filePath = path.join(__dirname, "../../", `storage/resumes/${jobApplication.id}.pdf`)
-
+    const filePath = path.resolve(`storage/resumes/${jobApplication.id}.pdf`)
     if (!fs.existsSync(filePath)) {
       res.status(404).end()
       return
