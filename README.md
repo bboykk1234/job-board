@@ -1,7 +1,7 @@
 ## Notes
 - The application is to manage job openings and job applicants, it allows anyone to apply
 - The application is a prototype, it does not have a registration portal and it only can be logged in by using the `Test Account` mentioned below to utilize the full feature.
-- The application doesn't refresh the logged in token, the token it able to last 7 days.
+- The application doesn't refresh the logged in token, the token it able to last 1 hour.
 ## Before getting started
 - Make sure you have the following install
     - Docker
@@ -33,3 +33,10 @@
 ## Test Account
 - Username: admin
 - Password: admin
+
+## Tech stacks
+- NextJs
+- ReactJs
+- Typescript
+- MySQL
+- Elasticsearch
